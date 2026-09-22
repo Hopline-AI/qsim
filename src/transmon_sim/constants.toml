@@ -179,11 +179,11 @@ n_seq_max = 40
 [cost]
 t_init_s = 200e-6          # passive reset
 t_readout_s = 0.5e-6
-t_reconfig_s = 25.0        # UNSOURCED. Long attributed to a vendor reference blueprint;
-                           # a search of that blueprint's code and docs on 2026-09-17 found
-                           # no such figure. It drives roughly two thirds of all simulated
-                           # machine time, so every machine-time result depends on it.
-                           # Measure it on the target instrument before quoting any saving.
+t_reconfig_s = 0.0         # Fixed instrument re-arming cost per batch. No published
+                           # value was found for it, and a wrong one dominates every
+                           # machine-time figure, so the default claims nothing. Set it
+                           # from your own instrument: CostModel(t_reconfig_s=...) or a
+                           # device profile.
 per_extra_qubit_s = 0.4    # modelling: multiplexing overhead per extra qubit
 
 # Duration of the pulse sequence itself, averaged over the sweep.

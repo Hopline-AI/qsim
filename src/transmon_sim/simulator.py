@@ -1267,7 +1267,7 @@ class MockQPU:
         e0, e1, _sep, p_res = self._readout_errors(st, ap)
         # AUDIT FIX (2026-09): the numerator must cover the SAME window as the
         # denominator. Acquisition starts only after the instrument has been
-        # re-armed, so a cosmic ray that arrives during the 25 s reconfiguration
+        # re-armed, so a cosmic ray that arrives during the reconfiguration
         # corrupts no shots -- there are none yet. Dividing a whole-batch overlap
         # by an acquisition-only duration declared 93% of short (active-reset)
         # Rabi batches destroyed when the true figure is 1%. `_burst_fractions`,

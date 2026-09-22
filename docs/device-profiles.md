@@ -307,9 +307,9 @@ constants, neither is a defect in them:
   0.111 against the 0.1485 spec. With the 40 ns gate, the drift trace's best achievable gate error
   passes 6e-3 in the four hours when a TLS pulls T1 to 3.9 µs or below.
 
-`constants.toml` uses `t_reconfig_s = 25.0` and marks it UNSOURCED. This profile replaces it with
-a measured bound. The bound comes from the short scans: 25 s on their 6 s scan is a factor of
+`constants.toml` defaults `t_reconfig_s` to zero, claiming nothing. This profile replaces it with
+a measured bound. The bound comes from the short scans: tens of seconds on their 6 s scan is a factor of
 five, on their 35 s scan +64% and on their 51 s scan +48%, while on the 513 s scan it is only
 +3.5% and would pass the same tolerance. Solving their two Q1 MZLC scans for a fixed term and a
 per-shot cost gives −0.14 s, so the profile sets it to zero rather than to a small non-zero
-value. It matters: at 25 s the fixed term is about two thirds of all simulated machine time.
+value. It matters: a fixed term of tens of seconds dominates all simulated machine time.

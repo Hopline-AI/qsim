@@ -191,7 +191,7 @@ def test_budget_floors_at_zero_and_does_not_block():
     enforce the budget itself.
     """
     inst = SimInstrument(qpu(0), budget_s=60.0)
-    for _ in range(4):
+    while inst.budget_remaining_s() > 0.0:
         inst.measure(MeasurementRequest(Routine.RB, (0,), n_points=24, n_shots=1500))
     assert inst.budget_remaining_s() == 0.0
 

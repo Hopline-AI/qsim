@@ -146,8 +146,9 @@ def _test_cost() -> bool:
           f"(acquisition {acq_a:.2f} s + {active.t_reconfig_s:.0f} s reconfig)")
     print(f"  total cost ratio              : {cp / ca:10.2f}x")
     print(f"  acquisition-only ratio        : {acq_p / acq_a:10.2f}x")
-    print(f"  -> the 100x reset win is diluted to {cp / ca:.0f}x by the fixed 25 s "
-          f"reconfig; that term is the reason\n     batching matters as much as reset does.")
+    print(f"  -> the 100x reset win is diluted to {cp / ca:.0f}x by the fixed "
+          f"{passive.t_reconfig_s:.0f} s reconfig; that term is why batching\n"
+          f"     matters as much as reset does.")
     ok = 450.0 < cp < 560.0
     print(f"  passive lands near 500 s: {ok}")
     return ok
@@ -276,7 +277,10 @@ def _test_multiplexing() -> bool:
           f"instead of once,\n  plus {cm.per_extra_qubit_s} s per extra qubit. "
           f"Over an 8 h shift that is\n  {(serial - batch) / 3600:.2f} h of fridge time "
           f"for the same information.")
-    ok = batch < 1.2 * one and serial > 5 * batch
+    # A 20-qubit batch must cost roughly one scan and serial must be far worse.
+    # The bound holds with no fixed reconfiguration term, where the only
+    # multiplexing cost left is per_extra_qubit_s.
+    ok = batch < 1.5 * one and serial > 5 * batch
     print(f"\n  multiplexing is ~free and serial is ~{serial / batch:.0f}x worse: {ok}")
     return ok
 

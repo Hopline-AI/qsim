@@ -336,10 +336,10 @@ t_reconfig_s = 0.0         # MEASURED bound [Sinica]: their shortest scan,
                            # other scans run over by 0 to 9.4 s, varying
                            # scan to scan, which no fixed term explains.
                            #
-                           # constants.toml uses 25.0 s here and marks it
-                           # UNSOURCED. This profile replaces that number with a
-                           # measured bound. It matters: at 25 s the fixed term
-                           # is two thirds of all simulated machine time, and
+                           # constants.toml defaults this to zero, claiming
+                           # nothing. This profile sets a measured bound. The
+                           # term matters: a fixed cost of tens of seconds
+                           # dominates all simulated machine time, and
                            # every machine-time result computed against the
                            # default baseline inherits it.
 per_extra_qubit_s = 0.4    # INHERITED (modelling: multiplexing overhead). Their

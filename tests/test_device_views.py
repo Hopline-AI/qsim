@@ -33,6 +33,6 @@ def test_rb_fit_tracks_the_truth():
 
 
 def test_rb_timing_follows_t_reconfig():
-    slow = dv.rb_precision(DeviceParams(), 0, 4, 1, 200e-6, n_batches=2)
+    slow = dv.rb_precision(DeviceParams(), 0, 4, 1, 200e-6, n_batches=2, t_reconfig_s=10.0)
     fast = dv.rb_precision(DeviceParams(), 0, 4, 1, 200e-6, n_batches=2, t_reconfig_s=0.0)
     assert np.all(fast.t_h < slow.t_h)

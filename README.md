@@ -134,9 +134,10 @@ has to finish in spec.
 propagators, and TLS statistics against Klimov's measurements, but no result has been
 compared with a running chip.
 
-**Machine time depends on `t_reconfig`.** The default fixed cost of 25 s per batch has no
-source, and at that value it is about two thirds of a single-qubit bring-up, more for short
-scans. Set it to your instrument's measured value, and quote machine time with the value used.
+**Machine time depends on `t_reconfig`.** The fixed instrument re-arming cost per batch has no
+published source, and a wrong value dominates every machine-time figure, so the default is zero
+and claims nothing. Set it to your instrument's measured value, and quote machine time with the
+value used.
 
 **Two-qubit error is scored on request.** `true_in_spec` checks single-qubit gate error by
 default; `include_pairs=True` also requires every CZ the qubit takes part in. With perfect

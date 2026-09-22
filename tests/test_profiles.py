@@ -99,6 +99,9 @@ THEIR_MISS = Scan("C1 MZLC 400 x 400", contract.Routine.QUBIT_SPEC, 400, 400, 35
 ALL_SCANS = [*PUBLISHED_SCANS, THEIR_MISS]
 
 COST_TOLERANCE = 0.05
+#: A hypothetical fixed re-arming term. The default is zero, so this is the size
+#: the published scans must be able to exclude, not a value the model uses.
+_CANDIDATE_FIXED_S = 25.0
 
 
 # ---------------------------------------------------------------------------
@@ -138,7 +141,7 @@ def floors_at(t1_s):
 cost = CostModel()
 costed = {}
 costed_with_default_reconfig = {}
-alt = CostModel(t_reconfig_s=25.0)
+alt = CostModel(t_reconfig_s=__CANDIDATE__)
 for name, routine, n_points, n_shots in scans:
     req = MeasurementRequest(routine=Routine(routine), qubits=(0,),
                              n_points=n_points, n_shots=n_shots)
@@ -184,7 +187,7 @@ def _probe(constants: Path | None) -> dict:
         {name: t1 for name, (t1, _) in MEASURED_READOUT.items()},
     ])
     done = subprocess.run(
-        [sys.executable, "-c", _PROBE, arg],
+        [sys.executable, "-c", _PROBE.replace("__CANDIDATE__", repr(_CANDIDATE_FIXED_S)), arg],
         cwd=ROOT, env=env, capture_output=True, text=True, check=False,
     )
     assert done.returncode == 0, f"probe failed for {constants}:\n{done.stderr}"
@@ -281,13 +284,13 @@ def test_the_one_missed_scan_is_missed_by_their_own_schedule(sinica):
 
 
 def test_there_is_no_fixed_reconfiguration_term(sinica):
-    """Their data bounds t_reconfig below ~0.5 s; the default 25 s does not fit it.
+    """Their data bounds t_reconfig below ~0.5 s; a fixed term of tens of seconds does not fit.
 
-    Only a scan short enough for 25 s to stand out can say so: on the 513 s
+    Only a scan short enough for such a term to stand out can say so: on the 513 s
     scan it is 4.9%, inside the tolerance. Every scan under 250 s rejects it.
     """
     assert sinica["cost_model"]["t_reconfig_s"] == 0.0
-    decisive = [s for s in ALL_SCANS if s.reported_s < 25.0 / (2 * COST_TOLERANCE)]
+    decisive = [s for s in ALL_SCANS if s.reported_s < _CANDIDATE_FIXED_S / (2 * COST_TOLERANCE)]
     fits = [
         s.name
         for s in decisive
@@ -295,7 +298,7 @@ def test_there_is_no_fixed_reconfiguration_term(sinica):
         <= COST_TOLERANCE * s.reported_s
     ]
     assert len(decisive) >= 4
-    assert not fits, "a 25 s fixed term should miss every short scan, but fits: " + ", ".join(fits)
+    assert not fits, "a large fixed term should miss every short scan, but fits: " + ", ".join(fits)
 
 
 # ---------------------------------------------------------------------------
