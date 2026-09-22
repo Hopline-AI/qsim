@@ -48,9 +48,9 @@ decoherence linearly in `t_gate/T1` and `t_gate/T2`.
 
 **TLS defects.** Zero to three per qubit within ±120 MHz, couplings and linewidths drawn from
 Klimov's Table S1. Depth follows `4*pi*g^2/width`, so a broad defect is necessarily a shallow
-one. Defects diffuse, and about half hop between two frequencies. Roughly one qubit in ten sees its
-T1 span more than 10x over a day, the worst losing 25x in a quarter of an hour; the rest are
-barely touched.
+one. Defects diffuse, and about half hop between two frequencies. About one qubit in seven sees its
+T1 span more than 10x over a day, and the worst excursions exceed 100x within a quarter of an
+hour; the median qubit is untouched.
 
 **Flux noise.** Eight Ornstein-Uhlenbeck modes from 60 s to 1e5 s, summing to 50 kHz of
 stationary frequency wander.
