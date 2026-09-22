@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.24.2"
-app = marimo.App(width="full", app_title="transmon-sim explorer", css_file="hopline.css")
+app = marimo.App(width="full", app_title="QSim explorer", css_file="hopline.css")
 
 
 @app.cell
@@ -21,7 +21,7 @@ def _():
 @app.cell
 def _(mo):
     mo.md("""
-    # transmon-sim explorer
+    # QSim explorer
 
     A simulated chip of up to 20 flux-tunable transmon qubits in a line, joined by tunable couplers.
 

@@ -41,8 +41,8 @@ verified citation without checking it there.
 [Magesan11] E. Magesan et al., PRL 106, 180504 (2011). RB: eps = (d-1)/d * (1-p).
 [Wallman14] J. Wallman, S. Flammia, NJP 16, 103032 (2014). RB sequence-to-sequence
             variance ~ A^2 p^(2m) m (1-p)^2.
-[Barends14] R. Barends et al., Nature 508, 500 (2014). 25 ns single-qubit gates,
-            1Q error ~1e-3, thermal population ~1%.
+[Barends14] R. Barends et al., Nature 508, 500 (2014). 10-20 ns single-qubit gates,
+            average 1Q fidelity 0.9992, 38-45 ns CZ.
 [Kreikebaum20] J. M. Kreikebaum et al., Supercond. Sci. Technol. 33, 06LT02 (2020).
             Transmon fabrication frequency scatter, sigma ~ tens of MHz.
 [Walter17]  T. Walter et al., Phys. Rev. Applied 7, 054020 (2017). Dispersive

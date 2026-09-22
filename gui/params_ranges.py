@@ -45,7 +45,7 @@ GROUPS = {
 }
 
 PUBLISHED = {
-    "gate_duration_s": ("single-qubit gates 12-20 ns; CZ 38-45 ns", "Barends 2014, SI Table S3"),
+    "gate_duration_s": ("single-qubit gates 10-20 ns; CZ 38-45 ns", "Barends 2014, SI Table S3"),
     "base_gate_error": ("Barends' 2e-4 is added error per Clifford from simultaneous XY, not a floor", "Barends 2014, SI"),
     "t1_base_s": ("20-40 us in the main text, up to 57 us in the SI", "Barends 2014"),
     "anharmonicity_hz": ("alpha ~ -E_C; Koch uses E_C/h = 0.35 GHz (~ -350 MHz)", "Koch 2007, Eq. 2.12"),

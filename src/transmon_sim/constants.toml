@@ -35,7 +35,8 @@ readout_error = 0.02     # modelling: readout error defining in-spec
 # Gate and coherence
 # ---------------------------------------------------------------------------
 [gate]
-duration_s = 25e-9           # [Barends14] 25 ns DRAG-shaped single-qubit gate
+duration_s = 25e-9           # modelling: round value. [Barends14] reports 10-20 ns single-qubit
+                             # gates (SI Table S3), never 25 ns
 base_error = 2.0e-4          # modelling: control-independent floor
 max_error = 0.5              # depolarising cap, eps = (d-1)/d at p = 0
 
@@ -134,7 +135,8 @@ ro_wander_tau_h = 6.0
 # ---------------------------------------------------------------------------
 [readout]
 iq_separation_opt = 6.0           # blob separation in units of sigma at optimum
-thermal_population = 0.015        # [Barends14] n_th ~ 1-2%
+thermal_population = 0.015        # UNSOURCED. Long cited to [Barends14], whose text gives no
+                                  # thermal population figure
 active_reset_max_s = 10e-6        # below this, t_init means feedback reset
 active_reset_residual = 0.01      # [Riste12] ~1% residual after feedback reset
 

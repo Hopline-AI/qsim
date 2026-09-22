@@ -94,44 +94,67 @@ paper it came from, `modelling` where it is a choice, or `UNSOURCED` where a cla
 not be found. `TRANSMON_SIM_CONSTANTS` points the loader at a different file to rebuild the whole
 set on another device.
 
-## Install
+## Run it locally
+
+You need Python 3.12 or newer and [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
 ```bash
+git clone https://github.com/Hopline-AI/qsim.git
+cd qsim
 uv sync
-uv run python -m transmon_sim.selftest      # 5 end-to-end checks, exits non-zero on failure
-uv run pytest                               # property tests
-uv run --group gui marimo run gui/app.py    # parameter explorer
 ```
 
-The self-test is the more interesting one: it runs a cold-start calibration loop through
-measure, fit, apply and verify, and has to finish in spec.
+**Open the explorer.** An interactive view of the simulated chip: drift, TLS defects, spec
+floors, parameter sweeps and RB precision, with every device setting editable in the sidebar.
 
-## Limitations
+```bash
+uv run --group gui marimo run gui/app.py
+```
 
-**Nothing here has been validated against hardware.** No result transfers without checking.
+It prints a local URL (http://localhost:2718 by default); open it in a browser.
 
-**The default `t_reconfig` of 25 s is unsourced.** It was long attributed to a vendor reference
-blueprint; a search of that blueprint found no such figure. It sets roughly two thirds of all
-simulated machine time, so no machine-time result means anything without stating which value
-produced it. One published instrument's scan times reproduce with no fixed term at all.
+**Drive it from Python.** The snippet at the top of this README runs as-is inside
+`uv run python`. To model another device, point `TRANSMON_SIM_CONSTANTS` at your own copy of
+`constants.toml`.
 
-**Two-qubit error is scored only on request.** `true_in_spec` means single-qubit gate error by
-default; pass `include_pairs=True` to require every CZ a qubit takes part in. On the default
-device that costs 13 points of service, and far more if the couplers drift. The default is kept
-so that earlier results are not silently restated.
+**Check the install.**
 
-**Crosstalk is a static matrix.** Fast-flux magnitude, about 0.01% per element, with a fall-off
-borrowed from the same group's DC measurements as an assumption. At that size an uncompensated CZ
-costs its spectators a median 2e-12, so measuring the elements only adds noise; a 100 ns matrix is
-some 600 times larger. Drifting matrices, parallel CZ layers and pulse shapes are not modelled.
+```bash
+uv run python -m transmon_sim.selftest      # 5 end-to-end checks, exits non-zero on failure
+uv run --group gui pytest                   # property and integration tests
+```
 
-**Some constants still diverge from their sources.** Each entry in `constants.toml` says so where
-it does. The largest are fabrication scatter, which lacks the large shared offset a real chip has,
-and the RB decay offset. The TLS spread matches Klimov's sigma(t) = 2D*sqrt(t) only to 25-30%.
+The self-test checks determinism, drift statistics, cost arithmetic and multiplexed pricing,
+and runs a cold-start calibration of one qubit through measure, fit, apply and verify, which
+has to finish in spec.
 
-**Spectroscopy fitters trade sensitivity for honesty.** A line is certified only if it beats a
-flat baseline in a look-elsewhere-corrected likelihood-ratio test, which holds pure-noise passes
-under 1%. Below about 11 points a scan cannot estimate its own noise and the test turns strict.
+## Assumptions and scope
+
+**Not yet validated against hardware.** Error terms are checked against independent
+propagators, and TLS statistics against Klimov's measurements, but no result has been
+compared with a running chip.
+
+**Machine time depends on `t_reconfig`.** The default fixed cost of 25 s per batch has no
+source, and at that value it is about two thirds of a single-qubit bring-up, more for short
+scans. Set it to your instrument's measured value, and quote machine time with the value used.
+
+**Two-qubit error is scored on request.** `true_in_spec` checks single-qubit gate error by
+default; `include_pairs=True` also requires every CZ the qubit takes part in. With perfect
+calibration on the default device, that lowers in-spec qubit-time from about 94% to 82%, and
+much further if the couplers drift. The default is kept so earlier results stay comparable.
+
+**Crosstalk is a static matrix.** The default is the fast-flux magnitude, about 0.01% per
+element, small enough that an uncompensated CZ costs its neighbours a median 2e-12. Matrices
+measured with slower 100 ns pulses are hundreds of times larger, where compensation matters. Drifting matrices, parallel CZ layers and pulse shapes are not modelled.
+
+**Some constants are simplified.** Fabrication scatter is independent per qubit, without the
+shared per-chip offset real chips show. The RB decay offset is fixed rather than absorbing SPAM
+error. The TLS spread is about 1.3x Klimov's sigma(t) = 2D*sqrt(t) at 1 h and 0.8x at 25 h.
+
+**Spectroscopy fitters prefer a miss to a false line.** A line is certified only if its
+improvement over a flat baseline passes a look-elsewhere-corrected significance test, which
+keeps pure-noise passes under 1%. The bar rises steeply for short scans, and a scan of fewer than
+6 points is never certified.
 
 ## Citation
 
