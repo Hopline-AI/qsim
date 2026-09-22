@@ -1,0 +1,458 @@
+# Device profile: Academia Sinica computational chip (5 transmons, 4 tunable couplers).
+#
+# A complete replacement for src/transmon_sim/constants.toml. Load it with
+#
+#     TRANSMON_SIM_CONSTANTS=profiles/sinica.toml
+#
+# _config.load does NOT merge, so every section and key of constants.toml is
+# repeated here even where the value is unchanged. Units and the _h -> _s
+# convention are the same as constants.toml.
+#
+# SOURCE. One paper only, and one version of it:
+#   [Sinica] arXiv:2508.03434 v3, "Characterizing and Mitigating Flux Crosstalk
+#            in Superconducting Qubits-Couplers System": Table S2 and Sec. SII
+#            (device), Tables S3 and S4 (scan timing), Table I (crosstalk).
+#   CHECK EVERY NUMBER AGAINST v3. v1 differs materially: it gave a 20 ns pulse
+#   and "a 4 us integration time", where v3 gives 40 ns and 0.4 us for qubits
+#   (4 us is the coupler figure), and Tables S3-S5 do not exist in v1.
+#   Their computational chip: 5 transmons + 4 tunable couplers, E_J/E_C = 73-81
+#   (from their f01,max and E_C via f01,max = sqrt(8 E_J E_C) - E_C). Only Q1,
+#   Q2, C1 and C2 were characterised: their OPX+ takes two qubits and two
+#   couplers per cabling session. Their other papers describe deliberately
+#   charge-sensitive devices (E_J/E_C = 24-29). Those are a different regime and
+#   no number from them is used here.
+#
+# Every entry carries one of:
+#   MEASURED     a number printed in [Sinica], quoted as printed
+#   DERIVED      arithmetic on MEASURED values only; the arithmetic is shown
+#                (a fitted value says "fitted" and names what it was fitted to)
+#   ASSUMPTION   our choice, not their data and not their requirement
+#   INHERITED    kept from constants.toml because [Sinica] publishes no value;
+#                its own provenance (and its caveats) are unchanged
+#
+# THE TWO QUBITS. [Sinica] v3 Table S2 characterises Q1 and Q2:
+#   f01 (max)      Q1 4768.6 +- 0.5 MHz    Q2 5081.9 +- 0.5 MHz
+#   E_C/h          Q1  206 +- 3 MHz        Q2  208 +- 3 MHz
+#   T1 (Phi=0)     Q1 11.1 +- 0.5 us       Q2  6.0 +- 0.6 us
+#   T2 (Phi=0)     Q1  4.8 +- 0.4 us       Q2  8.0 +- 0.6 us   (no sequence stated)
+#   T2* (Ramsey)   Q1  2.4 +- 0.2 us       Q2  2.1 +- 0.1 us
+#   F_a            Q1 90.1%                Q2 91.6%            (at 0.4 us)
+#   1Q gate fidelity 99.6% for both, 40 ns Gaussian with DRAG (method not stated).
+# The paper has no echo, Hahn or CPMG measurement anywhere; only T2* is labelled
+# Ramsey. It does not define F_a. Two qubits cannot fit a 20-qubit
+# distribution. Central values are theirs; every spread is marked as INHERITED
+# or as a stated ASSUMPTION.
+#
+# PUBLISHED DATA THIS MODEL HAS NO PLACE FOR (recorded, not used):
+#   qubit-resonator g/2pi, Q1 94 +- 2 MHz, Q2 95 +- 2 MHz. The readout here is
+#     parameterised by blob separation and kappa, not by g and chi.
+#   coupler f01 (max) C1 8044.6 +- 0.2 MHz, C2 7909 +- 2 MHz; coupler E_C 120
+#     and 127 +- 3 MHz. Used only through [coupler] idle_offset_hz below.
+#   flux crosstalk AFTER compensation, Table I: worst -0.5 +- 0.4 permille,
+#     mean |X| 0.2 +- 0.1. The model has no compensation floor to set; a
+#     policy's residual is whatever its own FLUX_XTALK estimates leave. The
+#     uncompensated matrix IS used: see [crosstalk] below. (The abstract's
+#     "56.5 -> 0.13 permille" appears nowhere in the body; do not use it.)
+#   CZ: no CZ fidelity and no calibrated CZ duration are reported.
+#   Coupler scans are read out at 4 us; the cost model has one t_readout.
+
+# ---------------------------------------------------------------------------
+# Pass/fail thresholds. A qubit is "in spec" below both.
+#
+# ASSUMPTION, both of them, and the most consequential choice in this file.
+# [Sinica] publishes performance, not a specification. Both are set by one
+# rule: 1.5x their measured error, and only if that sits above this profile's
+# worst perfectly-calibrated floor across the T1 clip range, so that every
+# qubit CAN pass once calibrated and the threshold measures calibration. The
+# defaults of constants.toml (1e-3, 2%) would fail every qubit on this device
+# at every instant, which makes a calibration policy unmeasurable.
+# ---------------------------------------------------------------------------
+[spec]
+gate_error = 6e-3        # ASSUMPTION: 1.5x their measured 4e-3. The perfectly
+                         # calibrated floor over a 40 ns gate is 2.5e-3 to
+                         # 5.2e-3 across the T1 clip range (3.4e-3 at the
+                         # median T1), base 2e-4 plus decoherence, so the rule
+                         # holds with 0.8e-3 of headroom at the shortest T1.
+                         # TLS dips below the clip push the floor over it for
+                         # about 5% of non-burst qubit-time (floor = spec at
+                         # T1 = 4.67 us); true_best_in_spec is what accounts
+                         # for those.
+cz_error = 5e-3          # INHERITED: [Sinica] reports no CZ fidelity in any
+                         # version (its only 99.x figure is the 1Q 99.6%), so
+                         # this is the default's value: the edge of published
+                         # tunable-coupler CZ gates, 99.48-99.90%.
+readout_error = 0.1485   # ASSUMPTION: 1.5x their worse measured readout error,
+                         # 0.099 (F_a = 90.1%, Q1). The perfectly calibrated
+                         # floor is 0.0875 to 0.0971 across the T1 clip range,
+                         # so the rule holds with 5 points of headroom. It
+                         # stays above the floor down to T1 = 1.34 us; a burst
+                         # (T1 = 0.7 us, floor 0.20) or a defect on resonance
+                         # (about 1% of non-burst qubit-time) takes it out of reach.
+
+# ---------------------------------------------------------------------------
+# Gate and coherence
+# ---------------------------------------------------------------------------
+[gate]
+duration_s = 40e-9           # MEASURED [Sinica] v3 Sec. SII: "A Gaussian pulse
+                             # with gate duration of 40 ns". v1 said 20 ns.
+base_error = 2.0e-4          # INHERITED (modelling: control-independent floor).
+                             # Their measured 4e-3 is a total and so bounds base
+                             # plus decoherence from above; at T1 = 6.0 us this
+                             # profile's floor (4.7e-3) already exceeds it. See
+                             # coherence.t_phi_white_over_t1.
+max_error = 0.5              # structural: depolarising cap, eps = (d-1)/d at p = 0
+
+[coherence]
+t1_base_s = 8.55e-6          # DERIVED [Sinica] Table S2: mean of 11.1 and 6.0 us
+t1_spread_s = 2.55e-6        # ASSUMPTION: half the difference of their two
+                             # qubits (11.1 - 6.0)/2. A two-point spread, not a
+                             # fitted distribution.
+t1_clip_s = [5.4e-6, 11.6e-6]   # ASSUMPTION: the interval their two qubits span
+                                # including error bars, 6.0-0.6 to 11.1+0.5.
+t_phi_white_over_t1 = 0.97   # ASSUMPTION. The paper has no echo measurement, and
+                             # its T2 (Phi=0) row, 4.8 and 8.0 us, states no pulse
+                             # sequence. 0.97 is what that row gives IF it is a
+                             # Hahn echo: 1/T2 = 1/(2*T1) + 1/T_phi,white gives
+                             # T_phi,white/T1 = 0.55 (Q1) and 4.0 (Q2), and
+                             # averaging the rates gives 1/1.031 = 0.97. The two
+                             # qubits disagree by 7x, so no single value fits
+                             # both. Their 99.6% gate fidelity at 40 ns argues
+                             # for more: under the model's error formula Q2
+                             # (T1 = 6.0 us) needs this ratio >= 1.41 to reach
+                             # 4e-3 even when perfectly calibrated. Kept, not
+                             # tuned to that bound, because the bound rests on
+                             # treating their unstated fidelity metric as ours.
+anharmonicity_hz = -207.0e6  # DERIVED [Sinica] v3 Table S2: alpha = -E_C/h (their
+                             # Eq. 1), mean of 206 and 208 MHz
+anharmonicity_spread_hz = 3.0e6  # ASSUMPTION: their two E_C differ by 2 MHz,
+                                 # less than the +-3 MHz they quote, so the
+                                 # qubit-to-qubit spread is unresolved. We use
+                                 # their stated uncertainty as the spread.
+
+# ---------------------------------------------------------------------------
+# 1/f frequency wander
+#
+# sigma_f_qs_hz is the only entry here that [Sinica] constrains: it is what sets
+# T2*. The rest describe the slow drift of the frequency over hours, which they
+# do not report.
+# ---------------------------------------------------------------------------
+[flux_noise]
+n_ou_modes = 8                        # INHERITED (structure of the 1/f model)
+ou_tau_s = [60.0, 1.0e5]              # INHERITED
+f01_wander_total_std_hz = 50e3        # INHERITED (modelling: stationary std)
+sigma_f_qs_hz = [88.6e3, 97.4e3]      # DERIVED [Sinica] Table S2 from (T1, T2*).
+                                      # The model's T2* is the 1/e time of
+                                      # exp(-t/2T1)*exp(-(t/T_phi)^2) with
+                                      # T_phi = sqrt(2)/(2*pi*sigma_f). Inverting
+                                      # it: (11.1, 2.4) us -> 88.6 kHz and
+                                      # (6.0, 2.1) us -> 97.4 kHz. Every qubit
+                                      # drawn from this range lands at
+                                      # T2* = 2.08-2.41 us, i.e. inside their
+                                      # published 2.1 +- 0.1 to 2.4 +- 0.2 us.
+
+# ---------------------------------------------------------------------------
+# Two-level-system defects [Klimov18]
+#
+# INHERITED wholesale. [Sinica] reports no TLS spectroscopy, no defect count and
+# no spectral diffusion rate. The values are constants.toml's, sourced there to
+# [Klimov18] (arXiv:1809.01043) Supplement Table S1, whose caveats apply
+# unchanged. The table is from a Google Xmon chip, not this one.
+# ---------------------------------------------------------------------------
+[tls]
+n_per_qubit = [0, 3]              # INHERITED [Klimov18]
+band_hz = 120e6                   # INHERITED
+birth_hz = 120e6                  # INHERITED
+d_hz_per_sqrt_h = 3.6e6           # INHERITED [Klimov18]
+confine_tau_h = 48.0              # INHERITED
+width_hz = [0.11e6, 10.26e6]      # INHERITED [Klimov18]
+g_hz = [131e3, 594e3]             # INHERITED [Klimov18]
+fluct_fraction = 0.538            # INHERITED [Klimov18]
+fluct_g_hz = [1e6, 12e6, 12e6, 16e6, 4e6, 15e6, 30e6, 20e6, 3e6]           # INHERITED [Klimov18]
+fluct_rate_per_h = [2.30, 0.05, 1.10, 0.05, 0.10, 0.07, 0.03, 0.03, 0.05]  # INHERITED [Klimov18]
+fluct_energy_kt = [0.18, 0.99]    # INHERITED [Klimov18]
+
+# ---------------------------------------------------------------------------
+# Cosmic rays / chip-wide bursts [McEwen22]
+#
+# INHERITED wholesale. [Sinica] reports no burst rate or recovery time.
+# ---------------------------------------------------------------------------
+[burst]
+rate_per_s = 0.1                  # INHERITED
+duration_s = [25e-3, 30e-3]       # INHERITED
+t1_during_s = 0.7e-6              # INHERITED
+bad_data_fraction = 0.2           # INHERITED
+
+# ---------------------------------------------------------------------------
+# Electronics rack drift
+#
+# INHERITED wholesale. [Sinica] reports no drift of the control electronics.
+# ---------------------------------------------------------------------------
+[electronics]
+diffusion_per_sqrt_h = 0.005      # INHERITED (modelling)
+tau_h = 8.0                       # INHERITED
+common_fraction = 0.85            # INHERITED
+
+# ---------------------------------------------------------------------------
+# Device design values
+# ---------------------------------------------------------------------------
+[fabrication]
+f01_design_hz = [4.7686e9, 5.0819e9]  # MEASURED [Sinica] Table S2: the max f01 of
+                                      # Q1 and Q2. The simulator lays qubits on a
+                                      # linear ladder between these two, so a
+                                      # chip of more than 2 qubits interpolates.
+f01_fab_sigma_hz = 40e6           # INHERITED [Kreikebaum20]: they publish no
+                                  # fabrication scatter
+f01_fab_clip_hz = 120e6           # INHERITED [Kreikebaum20]
+ro_design_center_hz = 5.9858e9    # MEASURED [Sinica] v3 Table S2: 5985.8 +- 0.2
+                                  # MHz, the resonator in the C2/Q2 column (R2,
+                                  # Q2's; the text puts f_C2 near f_R2). Q1's R1
+                                  # is 6073.7 +- 0.2 MHz. Earlier revisions of
+                                  # this file called 5985.8 Q1's and the only one
+                                  # published; both claims were wrong.
+ro_design_step_hz = 8e6           # ASSUMPTION: kept at the default. Their R1 and
+                                  # R2 are 87.9 MHz apart and the rest sit in
+                                  # 5.9-6.1 GHz, so the default ladder is far
+                                  # denser than their chip; not re-derived.
+ro_fab_sigma_hz = 8e6             # INHERITED
+ro_fab_clip_hz = 22e6             # INHERITED
+pi_amp_nominal = 0.30             # INHERITED (modelling: DAC fraction)
+pi_amp_sigma = 0.02               # INHERITED (modelling)
+pi_amp_clip = [0.22, 0.40]        # INHERITED (modelling)
+ro_amp_nominal = 0.09             # INHERITED (modelling)
+ro_amp_sigma = 0.008              # INHERITED (modelling)
+ro_amp_clip = [0.065, 0.12]       # INHERITED (modelling)
+kappa_hz = [1.5e6, 3.0e6]         # ASSUMPTION: kept at the default although v3
+                                  # publishes kappa/2pi = 108.8 kHz (R1) and
+                                  # 273.4 kHz (R2); its footnote defines the
+                                  # bracketed 91.9 and 36.6 us as 2pi*10/kappa.
+                                  # Applying it narrows the readout line below
+                                  # the inherited 300 kHz resonator wander, which
+                                  # changes what a policy must track. Undecided.
+ro_wander_std_hz = 300e3          # INHERITED
+ro_wander_tau_h = 6.0             # INHERITED
+
+# ---------------------------------------------------------------------------
+# Readout [Walter17]
+#
+# With perfect calibration the model's readout error is
+#   0.5*(e0 + e1),  e0 = e_sep + n_th + 0.5*exp(-t_init/T1),
+#                   e1 = e_sep + 1 - exp(-t_readout/(2*T1)),
+#   e_sep = 0.5*erfc(iq_separation_opt / (2*sqrt(2))).
+# iq_separation_opt is its only free parameter.
+# ---------------------------------------------------------------------------
+[readout]
+iq_separation_opt = 2.93          # DERIVED (fitted): least squares to their two
+                                  # readout errors at 0.4 us, 0.099 (Q1, T1 =
+                                  # 11.1 us) and 0.084 (Q2, T1 = 6.0 us), with
+                                  # t_init = 200 us and n_th = 0.015. Model 0.0879
+                                  # and 0.0954, residuals -0.011 and +0.011. The
+                                  # decay term puts the shorter-T1 Q2 0.75 points
+                                  # above Q1; they measure it 1.5 points below.
+                                  # A shared separation cannot close that gap, so
+                                  # the residual is split evenly. The fit moves
+                                  # with n_th, which they do not publish (3.22 at
+                                  # 0.05, 3.80 at 0.10; the residuals do not), and
+                                  # it takes F_a = 1 - 0.5*(P(1|0) + P(0|1)),
+                                  # an ASSUMPTION since the paper does not define
+                                  # F_a. A small separation is expected: their
+                                  # chain shows no parametric amplifier (Fig. S1),
+                                  # and Sec. SVII.B counts adding one as a speed-up.
+thermal_population = 0.015        # INHERITED: they publish no n_th
+active_reset_max_s = 10e-6        # structural: below this, t_init means feedback reset
+active_reset_residual = 0.01      # INHERITED [Riste12]. Unused here: [Sinica]
+                                  # uses 200 us passive reset.
+
+# ---------------------------------------------------------------------------
+# Spectroscopy
+#
+# INHERITED wholesale: drive powers and linewidths are not published.
+# ---------------------------------------------------------------------------
+[spectroscopy]
+fwhm_hz = 10e6                    # INHERITED (modelling)
+peak_p1 = 0.45                    # INHERITED (modelling)
+stark_hz = [-1.5e6, -0.4e6]       # INHERITED
+
+# ---------------------------------------------------------------------------
+# DRAG error budget
+#
+# INHERITED. [Sinica] says the 40 ns gate uses DRAG and reaches 99.6%, but
+# publishes no beta calibration or residual phase error. The known defect
+# recorded in constants.toml (phi0 back-solved for phi^2/3 while the code uses
+# phi^2/6) is inherited with it.
+# ---------------------------------------------------------------------------
+[drag]
+phi0_rad = 0.17                   # INHERITED
+beta_spread = 0.12                # INHERITED
+slope_k = 1.2                     # INHERITED
+
+# ---------------------------------------------------------------------------
+# Randomized benchmarking
+# ---------------------------------------------------------------------------
+[rb]
+m_max_default = 2048              # INHERITED
+seq_variance_k = 1.0              # INHERITED [Wallman14]
+cz_per_clifford = 1.5             # [Corcoles13] average CNOT count of a 2Q Clifford
+sq_per_clifford = 8.0             # modelling: single-qubit gates in that decomposition
+n_seq_max = 40                    # INHERITED
+
+# ---------------------------------------------------------------------------
+# Cost model: seconds of fridge occupancy.
+#
+#   wall_clock = t_reconfig + n_points * n_shots * (t_init + t_seq + t_readout)
+#              + per_extra_qubit * (n_qubits - 1)
+#
+# This section is the reason the profile exists, and it is the one part of it
+# that is checked against data rather than asserted. [Sinica] v3 Table S4
+# publishes six scan times. With t_init = 200e-6, t_readout = 0.4e-6 and NO
+# fixed reconfiguration term:
+#
+#   probe  scan    points  avg    predicted   reported
+#    Q1    MZLC     2500   100      50.6 s      51 s    -0.8%
+#    Q1    MZLC      100   300       6.07 s      6 s    +1.2%
+#    Q1    Ramsey  10000   100     210.0 s     210 s     0.0%  (sets t_seq)
+#    C1    MZLC     2500  1000     506.0 s     513 s    -1.4%
+#    C1    MZLC      400   400      32.4 s      35 s    -7.5%
+#    C1    Ramsey  10000   100     210.0 s     213 s    -1.4%
+#
+# The C1 rows are coupler scans read out at 4 us; one t_readout cannot
+# represent both, and 3.6 us is under 2% of a shot. The 35 s row is missed by
+# their own Eq. S66 too (400 x 400 x 204.17 us = 32.7 s, -6.7%), so the
+# discrepancy is inside the paper. tests/test_profiles.py checks the other five
+# to within 5% and checks that the sixth is their miss, not ours.
+# ---------------------------------------------------------------------------
+[cost]
+t_init_s = 200e-6          # MEASURED [Sinica] main text and Table S3: 200 us
+                           # passive reset. Their stated rule is
+                           # max(2pi*10/kappa, 10*T1) for an assumed T1 = 20 us.
+t_readout_s = 0.4e-6       # MEASURED [Sinica] v3 Sec. SII and Table S3: "0.4 us
+                           # for qubits and 4 us for couplers". v1's "4 us
+                           # integration time" was the coupler figure.
+t_reconfig_s = 0.0         # MEASURED bound [Sinica]: their shortest scan,
+                           # 100 x 300 shots, is reported as 6 s against 6.07 s
+                           # of acquisition, so any fixed overhead is below the
+                           # ~0.5 s rounding of that figure. Solving their two
+                           # Q1 MZLC scans for a fixed term and a per-shot cost
+                           # gives -0.14 s. Against their own schedule the
+                           # other scans run over by 0 to 9.4 s, varying
+                           # scan to scan, which no fixed term explains.
+                           #
+                           # constants.toml uses 25.0 s here and marks it
+                           # UNSOURCED. This profile replaces that number with a
+                           # measured bound. It matters: at 25 s the fixed term
+                           # is two thirds of all simulated machine time, and
+                           # every machine-time result computed against the
+                           # default baseline inherits it.
+per_extra_qubit_s = 0.4    # INHERITED (modelling: multiplexing overhead). Their
+                           # published scans are single-qubit, so their data
+                           # constrains nothing here.
+
+# Duration of the pulse sequence itself, averaged over the sweep.
+# Keys are Routine values (the wire format).
+[cost.sequence_time_s]
+resonator_spectroscopy = 1e-6     # INHERITED: negligible against a 200 us shot
+qubit_spectroscopy = 2e-6         # INHERITED: negligible against a 200 us shot
+power_rabi = 0.05e-6              # INHERITED
+ramsey = 9.6e-6                   # DERIVED [Sinica] Table S4: their 10000 x 100
+                                  # Q1 Ramsey is reported at 210 s, and
+                                  # 210/1e6 - 200e-6 - 0.4e-6 = 9.6e-6 s per shot.
+                                  # It is not a swept delay: their own Table S3
+                                  # schedule for that scan is t_sched = 200.61 us,
+                                  # which predicts 200.6 s, 4.5% below the 210 s
+                                  # they report. This value absorbs that
+                                  # inconsistency inside the paper.
+t1 = 30e-6                        # INHERITED: no T1 scan time published
+drag = 0.2e-6                     # INHERITED
+readout_optimization = 1e-6       # INHERITED
+randomized_benchmarking = 25e-6   # INHERITED
+t1_vs_frequency = 30e-6           # INHERITED
+two_qubit_randomized_benchmarking = 50e-6   # INHERITED: no 2Q RB timing published
+cz_conditional_phase = 0.2e-6     # INHERITED: no CZ tune-up time published
+flux_crosstalk = 2e-6             # DERIVED: MZLC is a spectroscopy scan with 100 ns
+                                  # pulses, so the qubit_spectroscopy t_seq. Their
+                                  # Table S3 schedule has 0.17 us of pulses per shot;
+                                  # at 2 us the 2500 x 100 scan costs 50.6 s (51 s
+                                  # reported) and the 100 x 300 scan 6.07 s (6 s).
+
+# ---------------------------------------------------------------------------
+# Tunable couplers.
+#
+# [Sinica] publishes the coupler frequencies but not the couplings, so the
+# geometry here is theirs and the strengths are inherited. Their couplers sit
+# about 3 GHz above the qubit pair, 2.4 times the 1.25 GHz of constants.toml.
+# That far out the counter-rotating terms of g_eff are a quarter the size of
+# the rotating ones, so the g_direct derived below includes them.
+# ---------------------------------------------------------------------------
+[coupler]
+# DERIVED [Sinica] Table S2: coupler mean f01 (8044.6 + 7909.3)/2 = 7976.95 MHz,
+# qubit pair mean (4768.6 + 5081.9)/2 = 4925.25 MHz, difference 3051.7 MHz.
+# 7909.3 +- 1.5 is v1's C2; v3 prints 7909 +- 2, which gives 3051.55 MHz. The
+# 0.15 MHz is far inside their error bar and is left unapplied.
+# These are sweet-spot maxima. Their Table S1 lists a simulated (not measured)
+# CZ idle configuration; the measured operating bias is not published, so this
+# is the upper bound on the idle detuning rather than a measured idle point.
+idle_offset_hz = 3051.7e6
+
+# INHERITED: [Sinica] publishes qubit-resonator g (94 and 95 MHz) but no
+# qubit-coupler g. Do not mistake one for the other.
+g_qc_hz = [70e6, 80e6]
+
+# DERIVED from the idle offset above and the INHERITED midpoint g_qc = 75 MHz,
+# under the ASSUMPTION that g_eff can be nulled at idle, for a pair centred on
+# their qubit mean 4925.25 MHz with the coupler at 7976.95 MHz ([Yan18] Eq. S33,
+# D = omega_c - omega = 3051.7 MHz, S = omega_c + omega = 12902.2 MHz):
+#   g_12 = g_qc^2 (1/D + 1/S) = 75e6^2 (1/3.0517e9 + 1/12.9022e9) = 2.279 MHz
+# The 1/S term is 0.436 MHz of it; the earlier 0.462 MHz (at g_qc = 37.5 MHz)
+# omitted it. Their own 313 MHz Q1-Q2 split would move the result by 0.2%.
+# A tunable coupler that cannot be turned off is not a tunable coupler. [Sinica]
+# reports no CZ fidelity, so this rests on the design intent, not on their data.
+g_direct_hz = 2.279e6
+
+# INHERITED: no coupler flux-noise figure published.
+wander_std_hz = 1.5e6
+wander_tau_h = 4.0
+
+# INHERITED: [Sinica] reports no CZ fidelity, no calibrated CZ duration and no
+# interaction-point coupling, so this stays at the default -5.9 MHz, which gives
+# t_gate = 60 ns. With the smaller g_direct above, the interaction bias sits
+# further from the upper qubit than on the default device.
+cz_g_eff_hz = -5.9e6
+
+# ---------------------------------------------------------------------------
+# Fast-flux crosstalk between Z-lines. Same law as constants.toml:
+#     X[i, j] = -nn_right d^-decay_right exp(scatter z)   source right of detector i
+#     X[i, j] = +nn_left  d^-decay_left  exp(scatter z)   source left of it
+#
+# DERIVED from [Sinica] v3 Fig. 4a, the 100 ns MZLC matrix before compensation
+# (rows detector, columns source, their order C1, Q1, C2, Q2, permille):
+#
+#          C1      Q1      C2      Q2
+#   C1   1000     -38     -27     -20
+#   Q1     43    1000     -56     -27
+#   C2    8.5      29    1000     -58
+#   Q2    2.7     0.9       8    1000
+#
+# The figure is an image; these values came with the brief. They reproduce
+# Table I: sum of |X| 318.1 (318.4 printed), sum of ||X_ik| - |X_ki|| over the
+# six pairs 143.9 (143.6), max 43 (43 +- 2), min -58 (-58 +- 1), mean |X| 26.5
+# (27 +- 19).
+#
+# Fitted by log-log least squares of |X| on d, separately for the six elements
+# whose source is right of the detector (-38, -56, -58 at d = 1; -27, -27 at
+# d = 2; -20 at d = 3) and the six whose source is left of it (43, 29, 8 at
+# d = 1; 8.5, 0.9 at d = 2; 2.7 at d = 3). scatter is the residual standard
+# deviation with the two fitted parameters removed. tests/test_profiles.py
+# repeats the fit.
+#
+# Their C1, Q1, C2, Q2 are lines 1-4 of this chain. ASSUMPTION: the law holds
+# at every position of the 9-line chain of 5 qubits and 4 couplers, and
+# extrapolates beyond the d <= 3 they measured.
+# ---------------------------------------------------------------------------
+[crosstalk]
+nn_right = 49.5e-3        # DERIVED: A = 49.55 permille
+decay_right = 0.85        # DERIVED: p = 0.848
+nn_left = 19.5e-3         # DERIVED: A = 19.54 permille
+decay_left = 2.25         # DERIVED: p = 2.253
+scatter = 0.17            # DERIVED: the right-source spread, 0.167. The left-source
+                          # spread is 1.08, most of it from one row, their Q2, the
+                          # end of the measured sub-chain. The right-source elements
+                          # set every spectator error, so their spread is the one used.
