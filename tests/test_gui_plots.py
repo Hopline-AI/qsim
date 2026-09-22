@@ -1,7 +1,11 @@
-import device_views as dv
 import numpy as np
-import plots
-from matplotlib.figure import Figure
+import pytest
+
+pytest.importorskip("matplotlib")
+
+import device_views as dv  # noqa: E402
+import plots  # noqa: E402
+from matplotlib.figure import Figure  # noqa: E402
 
 from transmon_sim import DeviceParams
 
