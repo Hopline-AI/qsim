@@ -1,6 +1,6 @@
-<p align="center"><img src="docs/assets/readme-banner.png" alt="transmon-sim: a drifting 20-qubit transmon simulator for calibration research, by Hopline" width="100%"></p>
+<p align="center"><img src="docs/assets/readme-banner.png" alt="QSim by Hopline: an open-source quantum device simulator for calibration research" width="100%"></p>
 
-# Transmon Sim
+# QSim
 
 A drifting 20-qubit transmon device with a hidden ground truth and an explicit measurement
 cost model, for building calibration policies without a fridge.
