@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>transmon-sim social preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: oklch(0.4200 0.0678 133.87);
+    --primary-deep: oklch(0.3400 0.0637 133.87);
+    --seed: #7C9070;
+    --primary-container: oklch(0.9000 0.0450 133.87);
+    --secondary-container: oklch(0.9100 0.0283 133.87);
+    --on-secondary-container: oklch(0.2600 0.0375 133.87);
+    --tertiary: oklch(0.4200 0.0823 181.87);
+    --background: oklch(0.9900 0.0031 133.87);
+    --ink: oklch(0.1900 0.0050 133.87);
+    --ink-soft: oklch(0.3400 0.0164 133.87);
+    --ink-faint: oklch(0.5200 0.0179 133.87);
+    --outline-variant: oklch(0.8400 0.0120 133.87);
+    --sage-text: #5F7457;
+    --pill: #E5E8E2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; background: var(--background); }
+  body { font-family: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif; color: var(--ink); }
+
+  .card { position: relative; width: 1280px; height: 640px; overflow: hidden; background: var(--background); }
+  .card::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(circle, oklch(0.84 0.012 133.87 / 0.55) 1.3px, transparent 1.6px);
+    background-size: 32px 32px; background-position: 16px 16px;
+  }
+  .rule { position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--seed); }
+
+  .motif { position: absolute; right: 0; bottom: 0; width: 1280px; height: 640px; }
+
+  .top { position: absolute; top: 72px; left: 84px; right: 84px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand svg { width: 60px; height: 62px; color: var(--seed); }
+  .word { display: flex; align-items: baseline; gap: 12px; }
+  .word b { font-weight: 800; font-size: 38px; letter-spacing: -0.02em; }
+  .word span { font-weight: 500; font-size: 22px; color: var(--ink-faint); }
+  .pill { font-weight: 600; font-size: 22px; color: var(--sage-text); background: var(--pill); padding: 11px 22px; border-radius: 999px; }
+
+  h1 { position: absolute; left: 84px; top: 204px; font-weight: 800; font-size: 80px; line-height: 1.04; letter-spacing: -0.03em; }
+  h1 em { font-style: normal; color: var(--sage-text); }
+  .sub { position: absolute; left: 84px; top: 398px; width: 760px; font-size: 28px; line-height: 1.4; color: var(--ink-faint); }
+  .url { position: absolute; left: 84px; bottom: 60px; font-weight: 700; font-size: 25px; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="rule"></div>
+
+  <svg class="motif" viewBox="0 0 1280 640" aria-hidden="true">
+    <defs>
+      <linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="0.55" stop-color="#fff" stop-opacity="1"/>
+      </linearGradient>
+      <mask id="m"><rect x="640" y="0" width="640" height="640" fill="url(#fade)"/></mask>
+    </defs>
+    <g mask="url(#m)">
+      <path id="trace" fill="none" stroke="oklch(0.42 0.0823 181.87)" stroke-opacity="0.30" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    </g>
+    <circle id="dip" r="6" fill="oklch(0.42 0.0823 181.87)" fill-opacity="0.36"/>
+  </svg>
+
+  <div class="top">
+    <div class="brand">
+      <svg viewBox="163.026 116.623 179.041 185.094" aria-hidden="true"><path fill="currentColor" d="M280.881104,135.101990 C307.139709,146.241348 324.180054,165.190979 330.803619,192.582138 C342.067566,239.163208 312.538727,283.839325 264.509491,292.490692 C213.286682,301.717285 163.026108,259.473145 169.456589,203.128754 C175.740707,148.066818 228.134415,116.623428 280.881104,135.101990 M235.495209,174.042023 C238.309952,177.200363 241.528473,177.376831 244.828705,175.017990 C247.584610,173.048187 248.943344,169.955139 246.923370,167.185669 C243.658096,162.708862 240.288803,157.788269 235.793137,154.839142 C227.056137,149.107712 214.806091,151.579254 206.933548,159.395065 C199.662247,166.613922 198.340042,178.659088 204.196152,188.482040 C210.078476,198.348999 216.366684,207.974030 222.479782,217.703354 C223.985931,220.100464 225.469971,222.512375 227.021606,224.879837 C230.107040,229.587601 233.555328,230.686676 237.364563,228.231613 C241.144516,225.795441 241.512115,222.364258 238.514084,217.396729 C237.911453,216.398224 237.277420,215.418640 236.656128,214.431427 C229.821976,203.572083 222.933990,192.746033 216.184967,181.834045 C214.100464,178.463776 213.009918,174.803146 215.388306,171.019760 C217.710526,167.325684 221.090408,165.427139 225.444122,165.661499 C230.455170,165.931244 232.751114,169.754944 235.495209,174.042023 M283.140961,211.331467 C280.116943,206.550858 277.174469,201.716003 274.041779,197.007706 C271.749359,193.562302 268.566620,192.843719 264.935760,194.873032 C261.417725,196.839340 260.551788,200.396164 262.558228,204.322830 C263.086578,205.356857 263.773651,206.310165 264.393311,207.297119 C271.741364,219.000275 279.178497,230.648819 286.397736,242.430908 C289.469879,247.444809 288.329895,252.022522 283.677643,255.579514 C279.145905,259.044434 274.345154,258.710571 270.286804,254.416428 C268.704590,252.742294 267.887085,249.944901 266.040253,249.022278 C263.704315,247.855301 260.413391,247.206863 258.008148,247.923950 C254.993439,248.822708 253.326538,252.012146 254.764465,255.251129 C258.196808,262.982513 263.234802,269.392853 272.160767,270.858246 C282.721588,272.592072 291.849091,269.493042 297.821716,260.327606 C303.596588,251.465622 302.416870,242.267624 297.065247,233.504059 C292.642975,226.262375 288.060150,219.118744 283.140961,211.331467 M287.767365,205.566452 C292.775116,210.308853 296.713104,206.389542 300.536957,203.742340 C309.701599,197.397766 312.912292,185.999176 308.654358,175.937622 C304.026489,165.001831 293.806091,158.990677 282.596649,161.904678 C276.817017,163.407150 271.405273,166.756592 266.178955,169.863052 C256.321625,175.722122 246.676086,181.942932 237.029999,188.149338 C232.883926,190.816925 232.046967,194.339600 234.292953,197.895218 C236.554291,201.475128 240.008041,202.132721 244.276733,199.743454 C245.581558,199.013123 246.819916,198.163925 248.087158,197.366669 C258.928680,190.546204 269.706146,183.620850 280.633575,176.940903 C287.937744,172.475861 295.388245,175.073441 296.767242,182.401352 C297.821747,188.005112 294.547180,191.391159 290.272461,194.215271 C285.203400,197.564163 284.702789,199.537277 287.767365,205.566452 M191.373871,238.356781 C193.667252,259.369019 211.385574,267.971436 229.404037,256.760010 C240.983261,249.555191 252.510452,242.265884 264.014282,234.941162 C268.708771,231.952118 269.701691,228.378891 267.148071,224.585022 C264.710052,220.962891 261.356750,220.507767 256.701111,223.384583 C249.482452,227.845123 242.333939,232.419037 235.147491,236.931808 C229.934082,240.205582 224.797531,243.615662 219.459335,246.672684 C214.807419,249.336700 209.849564,248.322906 206.877274,244.556290 C203.697189,240.526321 203.935059,235.452637 207.751419,231.465485 C209.220078,229.931107 211.144669,228.833969 212.857483,227.532288 C216.134201,225.042038 217.034698,221.951035 214.792831,218.388824 C212.597534,214.900604 209.448975,213.993378 205.760864,215.969971 C197.151260,220.584167 191.364258,227.146301 191.373871,238.356781 z"/></svg>
+      <div class="word"><b>transmon-sim</b><span>by Hopline</span></div>
+    </div>
+    <div class="pill">Open source · Python</div>
+  </div>
+
+  <h1>Calibrate <em>20 qubits</em><br>before you touch the fridge.</h1>
+  <p class="sub">A drifting transmon simulator with a hidden ground truth, for testing calibration algorithms.</p>
+  <div class="url">github.com/Hopline-AI/transmonsim</div>
+</div>
+
+<script>
+  // T1 over a shift: slow 1/f-like wander, and one TLS defect drifting through resonance.
+  const x0 = 640, x1 = 1290, base = 618, amp = 88;
+  let seed = 11;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5;
+  const modes = [0.7, 1.9, 4.3, 9.7, 17.1].map(f => ({ f, p: rnd() * 6.28, a: 1 / Math.sqrt(f) }));
+  const dipU = 0.6, pts = [];
+  for (let x = x0; x <= x1; x += 3) {
+    const u = (x - x0) / (x1 - x0);
+    let w = 0;
+    for (const m of modes) w += m.a * Math.sin(6.283 * m.f * u + m.p);
+    const dip = 0.72 * Math.exp(-(((u - dipU) / 0.04) ** 2));
+    pts.push([x, base - amp * (1 + 0.16 * w + 0.05 * rnd() - dip)]);
+  }
+  const d = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+  document.getElementById("trace").setAttribute("d", d);
+  const low = pts.reduce((a, b) => (b[1] > a[1] ? b : a));
+  const dot = document.getElementById("dip");
+  dot.setAttribute("cx", low[0]); dot.setAttribute("cy", low[1]);
+</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>transmon-sim banner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: oklch(0.4200 0.0678 133.87);
+  --primary-deep: oklch(0.3400 0.0637 133.87);
+  --primary-container: oklch(0.9000 0.0450 133.87);
+  --secondary-container: oklch(0.9100 0.0283 133.87);
+  --on-secondary-container: oklch(0.2600 0.0375 133.87);
+  --tertiary: oklch(0.4200 0.0823 181.87);
+  --background: oklch(0.9900 0.0031 133.87);
+  --ink: oklch(0.1900 0.0050 133.87);
+  --ink-soft: oklch(0.3400 0.0164 133.87);
+  --ink-faint: oklch(0.5200 0.0179 133.87);
+  --outline-variant: oklch(0.8400 0.0120 133.87);
+  --hairline: oklch(0.8800 0.0090 133.87);
+  --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1500px; height: 500px; overflow: hidden; background: var(--background); }
+body { font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; }
+.canvas { position: relative; width: 1500px; height: 500px; overflow: hidden; background: var(--background); }
+.grid { position: absolute; inset: 0;
+  background-image: radial-gradient(circle, var(--hairline) 1.3px, transparent 1.6px);
+  background-size: 28px 28px; background-position: 14px 14px; opacity: .75; }
+.rule { position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--primary); opacity: .72; }
+.motif { position: absolute; right: 60px; top: 126px; width: 520px; height: 300px; }
+.header { position: absolute; top: 72px; left: 96px; right: 96px; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 16px; }
+.brand svg { width: 58px; height: 58px; color: var(--primary); }
+.word { font-weight: 800; font-size: 32px; letter-spacing: -0.02em; }
+.by { font-weight: 500; font-size: 19px; color: var(--ink-faint); margin-left: 4px; position: relative; top: 2px; }
+.by b { font-weight: 700; color: var(--ink-soft); }
+.pill { font-weight: 600; font-size: 19px; color: var(--primary); background: var(--secondary-container);
+  padding: 11px 22px; border-radius: 999px; opacity: .92; }
+.main { position: absolute; left: 96px; top: 166px; width: 900px; }
+h1 { font-weight: 800; font-size: 64px; line-height: 1.05; letter-spacing: -0.028em; }
+h1 em { font-style: normal; color: var(--primary); }
+p.sub { margin-top: 20px; font-size: 21px; line-height: 1.5; color: var(--ink-soft); max-width: 860px; }
+.footer { position: absolute; left: 96px; bottom: 44px; font-size: 20px; color: var(--ink-faint); display: flex; align-items: center; gap: 12px; }
+.footer b { font-weight: 700; color: var(--ink); }
+.footer .mono { font-family: var(--mono); font-size: 16px; color: var(--ink-soft); }
+.footer .sep { color: var(--outline-variant); }
+</style></head>
+<body><div class="canvas">
+  <div class="grid"></div>
+  <div class="rule"></div>
+
+  <svg class="motif" viewBox="-40 -30 520 300" aria-hidden="true">
+    <g stroke="var(--primary)" fill="none" opacity=".16" stroke-width="1.5">
+      <line x1="0" y1="232" x2="440" y2="232"/>
+    </g>
+    <line x1="0" y1="118" x2="440" y2="118" stroke="var(--tertiary)" stroke-width="1.5" stroke-dasharray="6 7" opacity=".22"/>
+    <path d="M0,83.6 L4,85.7 L8,84.4 L12,87.2 L16,86.6 L20,87.2 L24,90.0 L28,88.6 L32,88.7 L36,89.8 L40,90.3 L44,89.2 L48,89.8 L52,88.1 L56,88.5 L60,88.2 L64,87.0 L68,86.5 L72,86.0 L76,87.1 L80,86.8 L84,86.2 L88,86.3 L92,84.4 L96,85.4 L100,85.4 L104,85.7 L108,83.8 L112,84.1 L116,82.3 L120,83.9 L124,82.1 L128,83.0 L132,85.7 L136,82.5 L140,85.9 L144,85.7 L148,85.4 L152,86.6 L156,87.1 L160,88.1 L164,87.3 L168,87.4 L172,87.9 L176,88.0 L180,89.5 L184,89.2 L188,91.5 L192,88.8 L196,90.0 L200,90.4 L204,89.3 L208,93.6 L212,89.2 L216,91.4 L220,91.2 L224,93.7 L228,90.5 L232,95.1 L236,96.1 L240,101.7 L244,109.0 L248,121.4 L252,134.0 L256,151.9 L260,169.7 L264,186.7 L268,193.2 L272,201.3 L276,197.1 L280,184.6 L284,168.9 L288,148.6 L292,131.1 L296,111.8 L300,96.7 L304,85.5 L308,77.6 L312,72.2 L316,68.0 L320,68.8 L324,63.1 L328,60.3 L332,63.1 L336,62.5 L340,62.6 L344,61.7 L348,61.5 L352,61.9 L356,62.5 L360,61.2 L364,61.4 L368,64.1 L372,63.0 L376,61.9 L380,65.9 L384,64.8 L388,64.0 L392,64.1 L396,66.3 L400,65.8 L404,66.3 L408,66.7 L412,68.2 L416,70.5 L420,69.6 L424,69.1 L428,71.8 L432,71.7 L436,72.9 L440,73.7" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" opacity=".30"/>
+    <g fill="var(--primary)" opacity=".26"><circle cx="12" cy="83.4" r="3.2"/><circle cx="40" cy="91.2" r="3.2"/><circle cx="68" cy="91.7" r="3.2"/><circle cx="96" cy="91.6" r="3.2"/><circle cx="124" cy="86.8" r="3.2"/><circle cx="152" cy="86.8" r="3.2"/><circle cx="180" cy="90.8" r="3.2"/><circle cx="208" cy="92.6" r="3.2"/><circle cx="236" cy="90.9" r="3.2"/><circle cx="264" cy="184.8" r="3.2"/><circle cx="292" cy="134.9" r="3.2"/><circle cx="320" cy="69.8" r="3.2"/><circle cx="348" cy="60.2" r="3.2"/><circle cx="376" cy="57.7" r="3.2"/><circle cx="404" cy="65.9" r="3.2"/><circle cx="432" cy="69.4" r="3.2"/></g>
+    <g font-family="JetBrains Mono, monospace" font-size="14" fill="var(--primary)" opacity=".42">
+      <text x="0" y="56">T1</text>
+      <text x="440" y="254" text-anchor="end">t · 8 h shift</text>
+      <text x="272" y="222" text-anchor="middle" fill="var(--tertiary)">TLS</text>
+    </g>
+  </svg>
+
+  <div class="header">
+    <div class="brand">
+      <svg viewBox="163.026 116.623 179.041 185.094" aria-hidden="true"><path fill="currentColor" d="M280.881104,135.101990 C307.139709,146.241348 324.180054,165.190979 330.803619,192.582138 C342.067566,239.163208 312.538727,283.839325 264.509491,292.490692 C213.286682,301.717285 163.026108,259.473145 169.456589,203.128754 C175.740707,148.066818 228.134415,116.623428 280.881104,135.101990 M235.495209,174.042023 C238.309952,177.200363 241.528473,177.376831 244.828705,175.017990 C247.584610,173.048187 248.943344,169.955139 246.923370,167.185669 C243.658096,162.708862 240.288803,157.788269 235.793137,154.839142 C227.056137,149.107712 214.806091,151.579254 206.933548,159.395065 C199.662247,166.613922 198.340042,178.659088 204.196152,188.482040 C210.078476,198.348999 216.366684,207.974030 222.479782,217.703354 C223.985931,220.100464 225.469971,222.512375 227.021606,224.879837 C230.107040,229.587601 233.555328,230.686676 237.364563,228.231613 C241.144516,225.795441 241.512115,222.364258 238.514084,217.396729 C237.911453,216.398224 237.277420,215.418640 236.656128,214.431427 C229.821976,203.572083 222.933990,192.746033 216.184967,181.834045 C214.100464,178.463776 213.009918,174.803146 215.388306,171.019760 C217.710526,167.325684 221.090408,165.427139 225.444122,165.661499 C230.455170,165.931244 232.751114,169.754944 235.495209,174.042023 M283.140961,211.331467 C280.116943,206.550858 277.174469,201.716003 274.041779,197.007706 C271.749359,193.562302 268.566620,192.843719 264.935760,194.873032 C261.417725,196.839340 260.551788,200.396164 262.558228,204.322830 C263.086578,205.356857 263.773651,206.310165 264.393311,207.297119 C271.741364,219.000275 279.178497,230.648819 286.397736,242.430908 C289.469879,247.444809 288.329895,252.022522 283.677643,255.579514 C279.145905,259.044434 274.345154,258.710571 270.286804,254.416428 C268.704590,252.742294 267.887085,249.944901 266.040253,249.022278 C263.704315,247.855301 260.413391,247.206863 258.008148,247.923950 C254.993439,248.822708 253.326538,252.012146 254.764465,255.251129 C258.196808,262.982513 263.234802,269.392853 272.160767,270.858246 C282.721588,272.592072 291.849091,269.493042 297.821716,260.327606 C303.596588,251.465622 302.416870,242.267624 297.065247,233.504059 C292.642975,226.262375 288.060150,219.118744 283.140961,211.331467 M287.767365,205.566452 C292.775116,210.308853 296.713104,206.389542 300.536957,203.742340 C309.701599,197.397766 312.912292,185.999176 308.654358,175.937622 C304.026489,165.001831 293.806091,158.990677 282.596649,161.904678 C276.817017,163.407150 271.405273,166.756592 266.178955,169.863052 C256.321625,175.722122 246.676086,181.942932 237.029999,188.149338 C232.883926,190.816925 232.046967,194.339600 234.292953,197.895218 C236.554291,201.475128 240.008041,202.132721 244.276733,199.743454 C245.581558,199.013123 246.819916,198.163925 248.087158,197.366669 C258.928680,190.546204 269.706146,183.620850 280.633575,176.940903 C287.937744,172.475861 295.388245,175.073441 296.767242,182.401352 C297.821747,188.005112 294.547180,191.391159 290.272461,194.215271 C285.203400,197.564163 284.702789,199.537277 287.767365,205.566452 M191.373871,238.356781 C193.667252,259.369019 211.385574,267.971436 229.404037,256.760010 C240.983261,249.555191 252.510452,242.265884 264.014282,234.941162 C268.708771,231.952118 269.701691,228.378891 267.148071,224.585022 C264.710052,220.962891 261.356750,220.507767 256.701111,223.384583 C249.482452,227.845123 242.333939,232.419037 235.147491,236.931808 C229.934082,240.205582 224.797531,243.615662 219.459335,246.672684 C214.807419,249.336700 209.849564,248.322906 206.877274,244.556290 C203.697189,240.526321 203.935059,235.452637 207.751419,231.465485 C209.220078,229.931107 211.144669,228.833969 212.857483,227.532288 C216.134201,225.042038 217.034698,221.951035 214.792831,218.388824 C212.597534,214.900604 209.448975,213.993378 205.760864,215.969971 C197.151260,220.584167 191.364258,227.146301 191.373871,238.356781 z"/></svg>
+      <span class="word">transmon-sim</span>
+      <span class="by">by <b>Hopline</b></span>
+    </div>
+    <div class="pill">Open source · Python</div>
+  </div>
+
+  <div class="main">
+    <h1>Calibrate <em>20 qubits</em><br>before you touch the fridge.</h1>
+    <p class="sub">A drifting transmon chip with a hidden ground truth:<br>TLS defects, flux noise, cosmic rays and a device-time cost model.</p>
+  </div>
+
+  <div class="footer">
+    <b>hopline.co</b><span class="sep">·</span><span class="mono">github.com/Hopline-AI/transmonsim</span>
+  </div>
+</div></body></html>

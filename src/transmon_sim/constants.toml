@@ -1,0 +1,268 @@
+# Every tunable constant in transmon-sim, in one place.
+#
+# This file is the single source of truth. `simulator.py` and `contract.py` read
+# it at import and define their module constants from it; `DeviceParams` takes
+# its defaults from those. Nothing in the package hard-codes a physical value.
+#
+# Units follow the package convention: Hz, seconds, dimensionless amplitudes
+# (0..1), dimensionless error rates. A name ending in _h is in hours and is
+# multiplied by 3600 on load; one ending in _per_h is a rate per hour and is
+# divided by 3600.
+#
+# Each entry carries its provenance:
+#   [Tag]       cited to a paper, by arXiv id or author and year
+#   modelling   a deliberate choice, not a measurement
+#   UNSOURCED   claimed to have a source that could not be found - do not defend
+#   DERIVED     arithmetic on a cited value; the arithmetic is shown beside it
+#   ASSUMPTION  our choice where the cited source is silent
+#
+# Where the code and a cited paper disagree, the entry says so and says why the
+# published value has not been applied. Changing one changes results already
+# computed against the model.
+
+# ---------------------------------------------------------------------------
+# Pass/fail thresholds. A qubit is "in spec" below both.
+# ---------------------------------------------------------------------------
+[spec]
+gate_error = 1e-3        # modelling: 1Q gate error defining in-spec
+cz_error = 5e-3          # modelling: CZ error defining in-spec, at the edge of published
+                         # tunable-coupler CZ gates, 99.48-99.90% by interleaved RB
+                         # (arXiv:2006.11860, 2011.01261, 2208.09460, 2402.18926).
+                         # arXiv:2508.03434 reports no CZ fidelity in any version.
+readout_error = 0.02     # modelling: readout error defining in-spec
+
+# ---------------------------------------------------------------------------
+# Gate and coherence
+# ---------------------------------------------------------------------------
+[gate]
+duration_s = 25e-9           # [Barends14] 25 ns DRAG-shaped single-qubit gate
+base_error = 2.0e-4          # modelling: control-independent floor
+max_error = 0.5              # depolarising cap, eps = (d-1)/d at p = 0
+
+[coherence]
+t1_base_s = 68e-6            # modelling: modern transmon median 60-100 us
+t1_spread_s = 8e-6           # qubit-to-qubit fabrication/loss spread
+t1_clip_s = [45e-6, 95e-6]
+t_phi_white_over_t1 = 3.0    # white dephasing floor, T_phi,white = 3*T1
+anharmonicity_hz = -200e6    # [Koch07] design point, alpha = -E_C/h
+anharmonicity_spread_hz = 4e6
+
+# ---------------------------------------------------------------------------
+# 1/f frequency wander [Bylander11]
+# ---------------------------------------------------------------------------
+[flux_noise]
+n_ou_modes = 8                        # log-spaced Lorentzians ~ 1/f over 3 decades
+ou_tau_s = [60.0, 1.0e5]              # 1 min .. 28 h
+f01_wander_total_std_hz = 50e3        # modelling: stationary std
+sigma_f_qs_hz = [12e3, 30e3]          # quasi-static spread -> T2*
+
+# ---------------------------------------------------------------------------
+# Two-level-system defects [Klimov18], arXiv:1809.01043, Supplement Table S1
+#
+# Their fit model (Supplement S3) is the model's T1 spectrum:
+#     1/T1(f) = sum_i 2 g_i^2 Gamma_i / ((Gamma_i/2pi)^2 + (f_i - f)^2) + 1/T1_Q
+# with g_i/h in Hz and Gamma_i a decoherence RATE, so the Lorentzian half-width
+# is width_i = Gamma_i/2pi. width_hz below is that half-width.
+#
+# Each defect may be coupled to one thermal fluctuator (TF). Its frequency is
+# then f_i +- g_par, E_TLS = E_0 + g_par <sigma_z,TF> (main text p. 3), so every
+# switch moves it by 2 g_par; the TF switches between its two states at Table
+# S1's rates. The defect also diffuses (an OU walk about its birth frequency).
+# Together they give the ensemble spread Klimov measures, sigma(t) = 2 D sqrt(t)
+# with D = 2.5 MHz/sqrt(h); constants.toml section 4.2 says why the walk's own
+# coefficient is not D, and section 12 how the rest was drawn.
+# ---------------------------------------------------------------------------
+[tls]
+n_per_qubit = [0, 3]              # DERIVED [Klimov18]: 13 defects on 5 qubits over 400 MHz is
+                                  # 1.56 per qubit in the 240 MHz band; uniform 0..3 has mean 1.5
+band_hz = 120e6                   # modelling: they live within +/-120 MHz of f01
+birth_hz = 120e6                  # modelling: born uniformly over the band, so the density
+                                  # near f01 is the count over 240 MHz
+d_hz_per_sqrt_h = 3.6e6           # DERIVED: the walk that, with the fluctuators, gives
+                                  # [Klimov18]'s sigma(t) = 2 D sqrt(t) over 1-25 h
+confine_tau_h = 48.0              # modelling: a finite TF bath bounds the walk
+width_hz = [0.11e6, 10.26e6]      # DERIVED [Klimov18] Table S1: Gamma_i = 0.69-64.47 us^-1,
+                                  # half-width Gamma_i/2pi
+g_hz = [131e3, 594e3]             # [Klimov18] Table S1: g_i/h = 0.131-0.594 MHz
+fluct_fraction = 0.538            # DERIVED [Klimov18] Table S1: 7 of 13 defects hop
+# [Klimov18] Table S1, one row per fluctuator (two defects have two); the draw
+# resamples these (g_par, rate) PAIRS, so the two lists are paired by position.
+fluct_g_hz = [1e6, 12e6, 12e6, 16e6, 4e6, 15e6, 30e6, 20e6, 3e6]           # g_par/h
+fluct_rate_per_h = [2.30, 0.05, 1.10, 0.05, 0.10, 0.07, 0.03, 0.03, 0.05]  # (G_eg + G_ge)/2
+fluct_energy_kt = [0.18, 0.99]    # [Klimov18] E_TF/k_B T = ln(G_eg/G_ge), uniform draw
+
+# ---------------------------------------------------------------------------
+# Cosmic rays / chip-wide bursts [McEwen22]
+# ---------------------------------------------------------------------------
+[burst]
+rate_per_s = 0.1
+duration_s = [25e-3, 30e-3]
+t1_during_s = 0.7e-6              # "< 1 us" during the burst
+bad_data_fraction = 0.2           # >20% of acquisition ruined -> bad
+
+# ---------------------------------------------------------------------------
+# Electronics rack drift
+# ---------------------------------------------------------------------------
+[electronics]
+diffusion_per_sqrt_h = 0.005      # modelling: 0.5% per sqrt(hour)
+tau_h = 8.0
+common_fraction = 0.85            # one rack -> mostly common-mode
+
+# ---------------------------------------------------------------------------
+# Device design values: these come off the chip drawing, so they are public
+# ---------------------------------------------------------------------------
+[fabrication]
+f01_design_hz = [4.5e9, 5.5e9]
+f01_fab_sigma_hz = 40e6           # [Kreikebaum20]
+f01_fab_clip_hz = 120e6           # [Kreikebaum20]
+ro_design_center_hz = 6.8e9
+ro_design_step_hz = 8e6
+ro_fab_sigma_hz = 8e6             # equals the resonator spacing; see the constant's own entry section 4
+ro_fab_clip_hz = 22e6
+pi_amp_nominal = 0.30             # modelling
+pi_amp_sigma = 0.02               # modelling
+pi_amp_clip = [0.22, 0.40]
+ro_amp_nominal = 0.09             # modelling
+ro_amp_sigma = 0.008              # modelling
+ro_amp_clip = [0.065, 0.12]
+kappa_hz = [1.5e6, 3.0e6]         # readout resonator linewidth
+ro_wander_std_hz = 300e3          # slow resonator pull
+ro_wander_tau_h = 6.0
+
+# ---------------------------------------------------------------------------
+# Readout [Walter17]
+# ---------------------------------------------------------------------------
+[readout]
+iq_separation_opt = 6.0           # blob separation in units of sigma at optimum
+thermal_population = 0.015        # [Barends14] n_th ~ 1-2%
+active_reset_max_s = 10e-6        # below this, t_init means feedback reset
+active_reset_residual = 0.01      # [Riste12] ~1% residual after feedback reset
+
+# ---------------------------------------------------------------------------
+# Spectroscopy
+# ---------------------------------------------------------------------------
+[spectroscopy]
+fwhm_hz = 10e6                    # modelling: power-broadened linewidth
+peak_p1 = 0.45                    # modelling: saturated two-level response
+stark_hz = [-1.5e6, -0.4e6]       # ac-Stark pull of the spec tone
+
+# ---------------------------------------------------------------------------
+# DRAG error budget
+# ---------------------------------------------------------------------------
+[drag]
+phi0_rad = 0.17                   # uncorrected-pulse phase error: adds phi^2/6 = 4.8e-3 with no DRAG
+beta_spread = 0.12
+slope_k = 1.2                     # measurement sensitivity, in units of 1/beta_nom
+
+# ---------------------------------------------------------------------------
+# Randomized benchmarking
+# ---------------------------------------------------------------------------
+[rb]
+m_max_default = 2048
+seq_variance_k = 1.0              # [Wallman14] coefficient, O(1)
+cz_per_clifford = 1.5             # [Corcoles13] average CNOT count of a 2Q Clifford
+sq_per_clifford = 8.0             # modelling: single-qubit gates in that decomposition
+n_seq_max = 40
+
+# ---------------------------------------------------------------------------
+# Cost model: seconds of fridge occupancy.
+#
+#   wall_clock = t_reconfig + n_points * n_shots * (t_init + t_seq + t_readout)
+#              + per_extra_qubit * (n_qubits - 1)
+#
+# t_init dominates. With passive reset it is ~5*T1 (200 us for a 40 us qubit);
+# with active reset ~2 us. That 100x is the whole reason this field cares about
+# reset speed.
+# ---------------------------------------------------------------------------
+[cost]
+t_init_s = 200e-6          # passive reset
+t_readout_s = 0.5e-6
+t_reconfig_s = 25.0        # UNSOURCED. Long attributed to a vendor reference blueprint;
+                           # a search of that blueprint's code and docs on 2026-09-17 found
+                           # no such figure. It drives roughly two thirds of all simulated
+                           # machine time, so every machine-time result depends on it.
+                           # Measure it on the target instrument before quoting any saving.
+per_extra_qubit_s = 0.4    # modelling: multiplexing overhead per extra qubit
+
+# Duration of the pulse sequence itself, averaged over the sweep.
+# Keys are Routine values (the wire format).
+[cost.sequence_time_s]
+resonator_spectroscopy = 1e-6
+qubit_spectroscopy = 2e-6
+power_rabi = 0.05e-6
+ramsey = 25e-6             # the swept delay IS the cost here
+t1 = 30e-6
+drag = 0.2e-6
+readout_optimization = 1e-6
+randomized_benchmarking = 25e-6   # long random sequences
+t1_vs_frequency = 30e-6
+two_qubit_randomized_benchmarking = 50e-6   # modelling: 1.5 CZ + single-qubit gates per Clifford
+cz_conditional_phase = 0.2e-6   # modelling: CZ plus two analysis pulses
+flux_crosstalk = 2e-6            # DERIVED: [arXiv:2508.03434]'s MZLC is a spectroscopy scan with
+                                  # 100 ns pulses, so the qubit_spectroscopy t_seq
+
+# ---------------------------------------------------------------------------
+# Tunable couplers and the CZ gate
+#
+# The chain is 1D: n qubits, n-1 couplers, coupler k joining qubits k and k+1.
+# The coupler sits ABOVE both qubits, so its mediated contribution opposes the
+# direct capacitive coupling and g_eff passes through zero near idle_offset_hz.
+#
+# The geometry is [Sung21]'s (arXiv:2011.01261), cross-checked against [Yan18]
+# (arXiv:1803.09813). The couplings are held fixed although a capacitive g
+# grows as sqrt(omega_i omega_c); [Sung21] quotes them at omega = 4.16 GHz, so
+# at this model's frequencies they are, if anything, low. DeviceParams rejects
+# geometry that coupler.py's second-order forms cannot describe
+# (coupler.validate_geometry); constants.toml sections 1 and 3 give every
+# derivation below.
+# ---------------------------------------------------------------------------
+[coupler]
+g_qc_hz = [70e6, 80e6]    # [Sung21] g_1c, g_2c = 72.5, 71.5 MHz; [Yan18] Fig. 2 implies ~79, 82 (derived)
+g_direct_hz = 5.0e6       # [Sung21] g_12 = 5.0 MHz
+idle_offset_hz = 1250e6   # derived: the g_eff null, counter-rotating terms included, of a pair at
+                          # 5 GHz with g_qc = 75 MHz. [Sung21] idles 1.29-1.45 GHz above its qubits
+wander_std_hz = 1.5e6     # modelling: a coupler sits at a steep flux bias, ~30x a qubit's wander
+wander_tau_h = 4.0        # modelling
+cz_g_eff_hz = -5.9e6      # [Sung21] 60 ns CZ: t_gate = 1/(2*sqrt(2)*|g|) = 59.9 ns; this is the
+                          # |11>-|02> coupling over sqrt(2). Published CZs run 22-60 ns (IBM 46,
+                          # SUSTech 30, IQM 33, BAQIS 48, Google 37-42). With these couplings the
+                          # 3 g_qc bias rule allows ~52 ns at |alpha| = 200 MHz; 60 ns leaves room
+                          # for |alpha| up to ~238 MHz
+
+# ---------------------------------------------------------------------------
+# Fast-flux crosstalk between Z-lines
+#
+# Every element has a Z-line, ordered Q0, C0, Q1, C1, ..., and d counts lines,
+# so neighbouring qubits are d = 2 apart. For detector i and source j,
+#     X[i, j] = -nn_right d^-decay_right exp(scatter z)   source to the right
+#     X[i, j] = +nn_left  d^-decay_left  exp(scatter z)   source to the left
+# with z one static N(0, 1) draw per element (crosstalk.crosstalk_matrix). The
+# sign pattern is the one on every element of [arXiv:2508.03434]'s Fig. 4a.
+#
+# This is the FAST-pulse matrix: the model applies crosstalk only while a CZ's
+# flux pulses are on (~60 ns), never as a DC bias.
+#
+# Magnitude: [Barrett23] App. G (arXiv:2303.03347, a 16-qubit flip-chip
+# array, 100 ns pulses): "most off-diagonal elements having a magnitude on the
+# order of 0.01%", "around two orders of magnitude smaller than DC flux
+# crosstalk levels". So the DC figure below is divided by 100.
+#
+# Distance shape: [Barrett23]'s DC law (App. E, Fig. 8B),
+# l(x) = 100/(178.2 x + 1) + 0.264 percent, refitted as A x^-p by log-log least
+# squares at x = 1, 2, 3, 4: A = 8.06e-3, p = 0.518. ASSUMPTION: App. G gives
+# no distance law, so the fast matrix is taken to fall off as the DC one does.
+# ASSUMPTION: their site distance, in lattice units, is our Z-line distance.
+# ASSUMPTION: the same magnitude on both sides; they report magnitudes and draw
+# the sign at random.
+#
+# Devices differ widely: [arXiv:2508.03434]'s measured 100 ns elements at d = 1 are
+# 38-58 permille, ~600x this default (a device profile). constants.toml
+# section 11 has both, and what each does to a CZ's spectators.
+# ---------------------------------------------------------------------------
+[crosstalk]
+nn_right = 8.1e-5         # DERIVED [Barrett23]: App. G's /100 on the DC refit's A = 8.06e-3
+decay_right = 0.52        # DERIVED [Barrett23]: p of the DC refit; ASSUMPTION for fast pulses
+nn_left = 8.1e-5          # ASSUMPTION: symmetric magnitude
+decay_left = 0.52         # ASSUMPTION: symmetric magnitude
+scatter = 0.5             # modelling: log-normal spread per element, between [arXiv:2508.03434]'s
+                          # right-source 0.17 and left-source 1.08 (a device profile)

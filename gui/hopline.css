@@ -1,0 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  --hl-primary: #3e552e;
+  --hl-primary-deep: #2a3f1b;
+  --hl-primary-container: #d2e5c7;
+  --hl-tertiary: #005b50;
+  --hl-background: #fbfcfa;
+  --hl-surface: #f1f5ef;
+  --hl-ink: #131412;
+  --hl-ink-soft: #343a31;
+  --hl-hairline: #d5d9d3;
+
+  --marimo-heading-font: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --marimo-text-font: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --marimo-monospace-font: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+}
+
+/* marimo computes these through light/dark toggles, so the brand values need !important to win */
+:root, .light, .light-theme {
+  --primary: var(--hl-primary) !important;
+  --primary-foreground: #ffffff !important;
+  --background: var(--hl-background) !important;
+  --foreground: var(--hl-ink) !important;
+  --accent: var(--hl-primary-container) !important;
+  --accent-foreground: var(--hl-primary-deep) !important;
+  --action: var(--hl-primary) !important;
+  --action-hover: var(--hl-primary-deep) !important;
+  --action-foreground: #ffffff !important;
+  --action-border: var(--hl-primary-deep) !important;
+  --link: var(--hl-primary) !important;
+}
+
+/* marimo's widgets use Tailwind's blue inside shadow roots; marimo copies this file into them, so :host is covered */
+:root, :host {
+  --color-blue-300: #a8bd9b !important;
+  --color-blue-500: var(--hl-primary, #3e552e) !important;
+  --color-blue-600: #2a3f1b !important;
+}
+
+body { background: var(--hl-background); color: var(--hl-ink); }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: #7c9070;
+  z-index: 1000;
+}
+
+h1, h2, h3 { color: var(--hl-ink) !important; font-weight: 800 !important; letter-spacing: -0.02em; }
+h2 { border-bottom: 1px solid var(--hl-hairline); padding-bottom: 0.3em; }
+.markdown strong { color: var(--hl-primary-deep); }
+a { color: var(--hl-primary); }
