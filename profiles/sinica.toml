@@ -1,8 +1,8 @@
 # Device profile: Academia Sinica computational chip (5 transmons, 4 tunable couplers).
 #
-# A complete replacement for src/transmon_sim/constants.toml. Load it with
+# A complete replacement for src/qsim/constants.toml. Load it with
 #
-#     TRANSMON_SIM_CONSTANTS=profiles/sinica.toml
+#     QSIM_CONSTANTS=profiles/sinica.toml
 #
 # _config.load does NOT merge, so every section and key of constants.toml is
 # repeated here even where the value is unchanged. Units and the _h -> _s

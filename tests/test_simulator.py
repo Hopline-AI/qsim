@@ -7,7 +7,7 @@ import math
 import numpy as np
 import pytest
 
-from transmon_sim import (
+from qsim import (
     GATE_ERROR_SPEC,
     CostModel,
     MeasurementRequest,
@@ -15,7 +15,7 @@ from transmon_sim import (
     Routine,
     SimInstrument,
 )
-from transmon_sim.simulator import BASE_GATE_ERROR, GATE_DURATION_S
+from qsim.simulator import BASE_GATE_ERROR, GATE_DURATION_S
 
 SHIFT_S = 8 * 3600.0
 
@@ -231,7 +231,7 @@ def test_uncalibrated_readout_yields_no_contrast():
 
 
 def test_t1_fit_recovers_the_true_value():
-    from transmon_sim.analysis import fit_t1
+    from qsim.analysis import fit_t1
 
     d = qpu(0)
     inst = SimInstrument(d, budget_s=SHIFT_S)
@@ -361,7 +361,7 @@ def test_t1_vs_freq_is_not_collapsed_by_a_burst_on_a_sub_sample():
 
 def test_t2star_truth_is_the_1_over_e_time_of_the_simulated_envelope():
     """T2* truth is where the simulated Ramsey envelope reaches 1/e."""
-    from transmon_sim.simulator import _ramsey_envelope
+    from qsim.simulator import _ramsey_envelope
 
     d = qpu(0)
     req = MeasurementRequest(Routine.RAMSEY, (0,), n_points=61, n_shots=800)
@@ -374,7 +374,7 @@ def test_t2star_truth_is_the_1_over_e_time_of_the_simulated_envelope():
 
 def test_tls_diffusion_is_confined_around_each_defects_own_frequency():
     """Diffusion is confined around each defect's birth frequency, not the qubit's."""
-    from transmon_sim import DeviceParams
+    from qsim import DeviceParams
 
     d = MockQPU(20, seed=0, params=DeviceParams(tls_fluct_fraction=0.0))   # isolate the diffusion
     m = d.drift.tls_mask

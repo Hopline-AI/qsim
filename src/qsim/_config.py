@@ -4,7 +4,7 @@
 `DeviceParams` takes its defaults from those. No physical value is written
 anywhere else in the package, so the TOML is the only place to look or edit.
 
-Set `TRANSMON_SIM_CONSTANTS` to a path to load a different file, which is how a
+Set `QSIM_CONSTANTS` to a path to load a different file, which is how a
 caller models a device with a different set of published constants without
 editing the package. Per-device overrides should still go through
 `DeviceParams`; this is for swapping the whole baseline at once.
@@ -30,7 +30,7 @@ def load(path: str | os.PathLike[str] | None = None) -> dict[str, Any]:
 
     A duration `x_h` becomes `x_s` in seconds; a rate `x_per_h` becomes `x_per_s` per second.
     """
-    p = Path(path or os.environ.get("TRANSMON_SIM_CONSTANTS") or DEFAULT_PATH)
+    p = Path(path or os.environ.get("QSIM_CONSTANTS") or DEFAULT_PATH)
     with p.open("rb") as fh:
         data = tomllib.load(fh)
     for section in data.values():

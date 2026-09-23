@@ -8,7 +8,7 @@ Each entry in constants.toml records, constant by constant, what comes from a pu
 measurement and what is a modelling choice. Read it before quoting any
 absolute number from this model.
 
-    from transmon_sim import MockQPU, SimInstrument, Routine, MeasurementRequest
+    from qsim import MockQPU, SimInstrument, Routine, MeasurementRequest
 
     qpu = MockQPU(n_qubits=20, seed=0)
     inst = SimInstrument(qpu, budget_s=8 * 3600)

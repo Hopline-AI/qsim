@@ -8,7 +8,7 @@ true.
 import ast
 from pathlib import Path
 
-from transmon_sim import _config, contract, coupler, simulator
+from qsim import _config, contract, coupler, simulator
 
 SRC = Path(simulator.__file__).parent
 MODULES = [SRC / "simulator.py", SRC / "contract.py", SRC / "coupler.py", SRC / "crosstalk.py"]

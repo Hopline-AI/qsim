@@ -1,6 +1,6 @@
 # Device profiles
 
-A profile is a complete replacement for `src/transmon_sim/constants.toml`: the same sections, the
+A profile is a complete replacement for `src/qsim/constants.toml`: the same sections, the
 same keys, different values. It models a particular piece of hardware without editing the package
 and without touching anyone else's baseline.
 
@@ -11,14 +11,14 @@ it fails to load. Per-device variation (one qubit unlike its neighbours) still b
 ## Using one
 
 ```bash
-TRANSMON_SIM_CONSTANTS=profiles/sinica.toml uv run python -m transmon_sim.selftest
-TRANSMON_SIM_CONSTANTS=profiles/sinica.toml uv run pytest -q
+QSIM_CONSTANTS=profiles/sinica.toml uv run python -m qsim.selftest
+QSIM_CONSTANTS=profiles/sinica.toml uv run pytest -q
 ```
 
 ```python
 import os
-os.environ["TRANSMON_SIM_CONSTANTS"] = "profiles/sinica.toml"   # BEFORE importing the package
-from transmon_sim.simulator import MockQPU
+os.environ["QSIM_CONSTANTS"] = "profiles/sinica.toml"   # BEFORE importing the package
+from qsim.simulator import MockQPU
 ```
 
 `simulator.py` and `contract.py` read the file once, at import, and `DeviceParams` and

@@ -10,8 +10,8 @@ data back. You never see the truth. The device drifts underneath you whether you
 or not.
 
 ```python
-from transmon_sim import MockQPU, SimInstrument, MeasurementRequest, Routine
-from transmon_sim.analysis import fit_t1
+from qsim import MockQPU, SimInstrument, MeasurementRequest, Routine
+from qsim.analysis import fit_t1
 
 qpu = MockQPU(n_qubits=20, seed=0)
 inst = SimInstrument(qpu, budget_s=8 * 3600)          # an eight-hour shift
@@ -24,7 +24,7 @@ for q in range(20):
 
 res = inst.measure(MeasurementRequest(Routine.T1, tuple(range(20)),
                                       n_points=41, n_shots=2000))
-print(f"{res.cost_s:.1f} s of device time for 20 qubits")   # 51.5
+print(f"{res.cost_s:.1f} s of device time for 20 qubits")   # 26.5
 
 t1, sigma, ok = fit_t1(res.data[0], n_shots=2000)
 print(f"q0 T1 = {t1 * 1e6:.1f} +/- {sigma * 1e6:.1f} us")   # 58.5 +/- 0.8
@@ -91,7 +91,7 @@ moves qubit frequencies up to 120 MHz and resonators up to 22 MHz off them.
 
 **Constants live in one file.** `constants.toml` holds every tunable value, each tagged with the
 paper it came from, `modelling` where it is a choice, or `UNSOURCED` where a claimed source could
-not be found. `TRANSMON_SIM_CONSTANTS` points the loader at a different file to rebuild the whole
+not be found. `QSIM_CONSTANTS` points the loader at a different file to rebuild the whole
 set on another device.
 
 ## Run it locally
@@ -114,13 +114,13 @@ uv run --group gui marimo run gui/app.py
 It prints a local URL (http://localhost:2718 by default); open it in a browser.
 
 **Drive it from Python.** The snippet at the top of this README runs as-is inside
-`uv run python`. To model another device, point `TRANSMON_SIM_CONSTANTS` at your own copy of
+`uv run python`. To model another device, point `QSIM_CONSTANTS` at your own copy of
 `constants.toml`.
 
 **Check the install.**
 
 ```bash
-uv run python -m transmon_sim.selftest      # 5 end-to-end checks, exits non-zero on failure
+uv run python -m qsim.selftest      # 5 end-to-end checks, exits non-zero on failure
 uv run --group gui pytest                   # property and integration tests
 ```
 

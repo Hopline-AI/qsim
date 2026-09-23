@@ -14,10 +14,10 @@ import numpy as np
 import pytest
 from scipy.optimize import fsolve
 
-from transmon_sim import DeviceParams, MeasurementRequest, MockQPU, Routine, SimInstrument
-from transmon_sim.analysis import fit_flux_xtalk, fit_result
-from transmon_sim.coupler import cz_bias_hz, cz_error_budget
-from transmon_sim.crosstalk import flux_to_freq, freq_shift, freq_to_flux, residual
+from qsim import DeviceParams, MeasurementRequest, MockQPU, Routine, SimInstrument
+from qsim.analysis import fit_flux_xtalk, fit_result
+from qsim.coupler import cz_bias_hz, cz_error_budget
+from qsim.crosstalk import flux_to_freq, freq_shift, freq_to_flux, residual
 
 SHIFT_S = 8 * 3600.0
 FINE = dict(n_points=2500, n_shots=100)

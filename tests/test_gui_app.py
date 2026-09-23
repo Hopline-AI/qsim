@@ -6,7 +6,7 @@ import pytest
 
 pytest.importorskip("marimo")
 
-from transmon_sim import DeviceParams  # noqa: E402
+from qsim import DeviceParams  # noqa: E402
 
 
 @pytest.fixture(scope="module")

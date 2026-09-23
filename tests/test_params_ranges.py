@@ -2,7 +2,7 @@ import dataclasses
 
 import params_ranges as pr
 
-from transmon_sim import DeviceParams
+from qsim import DeviceParams
 
 FIELDS = [f.name for f in dataclasses.fields(DeviceParams)]
 

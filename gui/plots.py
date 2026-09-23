@@ -13,7 +13,7 @@ from matplotlib.colors import LogNorm, Normalize
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 
-from transmon_sim import GATE_ERROR_SPEC, READOUT_SPEC
+from qsim import GATE_ERROR_SPEC, READOUT_SPEC
 
 
 def _has_font(name: str) -> bool:

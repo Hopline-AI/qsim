@@ -10,8 +10,8 @@ import inspect
 import numpy as np
 import pytest
 
-import transmon_sim.simulator as sim
-from transmon_sim import (
+import qsim.simulator as sim
+from qsim import (
     CostModel,
     DeviceParams,
     MeasurementRequest,

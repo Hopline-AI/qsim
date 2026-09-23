@@ -1878,5 +1878,5 @@ class SimInstrument(Instrument):
 
 
 # ---------------------------------------------------------------------------
-# Self-test:  uv run python -m transmon_sim.selftest
+# Self-test:  uv run python -m qsim.selftest
 # ---------------------------------------------------------------------------

@@ -10,7 +10,7 @@ Where a test now measures a different quantity from the one first written, its
 docstring says what changed and why; nothing was loosened to make it pass
 without saying so.
 
-The numerics below are written from scratch and import from `transmon_sim` only
+The numerics below are written from scratch and import from `qsim` only
 the thing under test, in the style `tests/test_coupler.py` sets out.
 """
 
@@ -23,8 +23,8 @@ import numpy as np
 import pytest
 from scipy.optimize import brentq, minimize_scalar
 
-from transmon_sim import DeviceParams, MockQPU
-from transmon_sim.coupler import cz_error_budget, g_eff_hz, g_eff_sensitivity
+from qsim import DeviceParams, MockQPU
+from qsim.coupler import cz_error_budget, g_eff_hz, g_eff_sensitivity
 
 PROFILE = Path(__file__).resolve().parents[1] / "profiles" / "measured.toml"
 
@@ -268,7 +268,7 @@ def test_the_no_literal_constants_check_covers_coupler_py():
     """
     import test_constants as tc  # noqa: PLC0415
 
-    import transmon_sim.simulator as sim  # noqa: PLC0415
+    import qsim.simulator as sim  # noqa: PLC0415
 
     assert Path(sim.__file__).parent / "coupler.py" in tc.MODULES
 

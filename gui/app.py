@@ -12,7 +12,7 @@ def _():
     import params_ranges as pr
     import plots
 
-    from transmon_sim import DeviceParams
+    from qsim import DeviceParams
 
     FIELDS = pr.DEFAULTS
     return DeviceParams, FIELDS, dv, mo, np, plots, pr

@@ -4,8 +4,8 @@ import dataclasses
 import json
 import typing
 
-from transmon_sim import DeviceParams
-from transmon_sim._config import HOUR_S
+from qsim import DeviceParams
+from qsim._config import HOUR_S
 
 DEFAULTS = {f.name: f.default for f in dataclasses.fields(DeviceParams)}
 INT_FIELDS = frozenset(

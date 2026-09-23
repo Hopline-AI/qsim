@@ -7,7 +7,7 @@ import device_views as dv  # noqa: E402
 import plots  # noqa: E402
 from matplotlib.figure import Figure  # noqa: E402
 
-from transmon_sim import DeviceParams
+from qsim import DeviceParams
 
 P = DeviceParams()
 

@@ -15,7 +15,7 @@ import pytest
 from scipy.linalg import expm
 from scipy.stats import kstest
 
-from transmon_sim import DeviceParams, MeasurementRequest, MockQPU, Routine, SimInstrument
+from qsim import DeviceParams, MeasurementRequest, MockQPU, Routine, SimInstrument
 
 HOUR = 3600.0
 KLIMOV_D = 2.5e6  # Hz per sqrt(hour), main text p. 3

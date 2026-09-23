@@ -2,7 +2,7 @@
 import device_views as dv
 import numpy as np
 
-from transmon_sim import GATE_ERROR_SPEC, DeviceParams
+from qsim import GATE_ERROR_SPEC, DeviceParams
 
 
 def test_device_traces_shapes_and_bounds():

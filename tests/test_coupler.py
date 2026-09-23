@@ -20,8 +20,8 @@ import pytest
 from scipy.linalg import expm
 from scipy.optimize import minimize_scalar
 
-from transmon_sim import DeviceParams, MockQPU, SimInstrument
-from transmon_sim.coupler import (
+from qsim import DeviceParams, MockQPU, SimInstrument
+from qsim.coupler import (
     ChainTopology,
     cz_bias_hz,
     cz_duration_s,
@@ -588,7 +588,7 @@ def test_coupler_truth_is_a_pure_function_of_seed_and_time():
 
 def test_measuring_does_not_move_the_coupler_trajectory():
     """Drift is a function of (seed, t); a policy's extra batches must not touch it."""
-    from transmon_sim import MeasurementRequest, Routine
+    from qsim import MeasurementRequest, Routine
 
     quiet = MockQPU(6, seed=2)
     busy = MockQPU(6, seed=2)

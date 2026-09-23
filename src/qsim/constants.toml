@@ -1,4 +1,4 @@
-# Every tunable constant in transmon-sim, in one place.
+# Every tunable constant in qsim, in one place.
 #
 # This file is the single source of truth. `simulator.py` and `contract.py` read
 # it at import and define their module constants from it; `DeviceParams` takes

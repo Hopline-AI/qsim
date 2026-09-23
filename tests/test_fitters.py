@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from transmon_sim.analysis import fit_qubit_spec, fit_resonator_spec
+from qsim.analysis import fit_qubit_spec, fit_resonator_spec
 
 FITTERS = [(fit_qubit_spec, +1), (fit_resonator_spec, -1)]
 IDS = ["qubit_spec", "resonator_spec"]

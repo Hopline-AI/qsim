@@ -8,7 +8,7 @@ from typing import NamedTuple
 
 import numpy as np
 
-from transmon_sim import (
+from qsim import (
     GATE_ERROR_SPEC,
     READOUT_SPEC,
     CostModel,
@@ -18,8 +18,8 @@ from transmon_sim import (
     Routine,
     SimInstrument,
 )
-from transmon_sim._config import HOUR_S
-from transmon_sim.analysis import fit_rb
+from qsim._config import HOUR_S
+from qsim.analysis import fit_rb
 
 # the loaded profile decides this; a literal here silently reinstates the
 # default device's reconfiguration term under every other profile.

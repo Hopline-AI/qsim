@@ -6,7 +6,7 @@ match the model they were drawn from, that the cost model is arithmetic rather
 than a fudge, that a closed calibration loop actually converges, and that
 multiplexing is priced correctly.
 
-Run:  python -m transmon_sim.selftest
+Run:  python -m qsim.selftest
 """
 from __future__ import annotations
 
@@ -287,7 +287,7 @@ def _test_multiplexing() -> bool:
 
 def _self_test() -> int:
     print("=" * 78)
-    print("transmon-sim self-test")
+    print("qsim self-test")
     print("=" * 78)
     results = {
         "determinism": _test_determinism(),

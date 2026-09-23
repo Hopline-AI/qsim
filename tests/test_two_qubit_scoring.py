@@ -8,14 +8,14 @@ crosstalk, and a chip whose every pair was destroyed still scored 100% healthy:
 import numpy as np
 import pytest
 
-from transmon_sim import (
+from qsim import (
     MeasurementRequest,
     MockQPU,
     Routine,
     SimInstrument,
 )
-from transmon_sim.analysis import fit_rb, fit_result
-from transmon_sim.simulator import CZ_PER_CLIFFORD, SQ_PER_CLIFFORD
+from qsim.analysis import fit_rb, fit_result
+from qsim.simulator import CZ_PER_CLIFFORD, SQ_PER_CLIFFORD
 
 SHIFT_S = 8 * 3600.0
 
@@ -119,7 +119,7 @@ def test_a_destroyed_pair_no_longer_scores_as_healthy():
     while leaving both qubits' own gates untouched. Before `include_pairs` such
     a chip scored 100% healthy.
     """
-    from transmon_sim import DeviceParams
+    from qsim import DeviceParams
 
     d = MockQPU(20, seed=0, params=DeviceParams(coupler_wander_std_hz=80e6))
     for q in range(20):

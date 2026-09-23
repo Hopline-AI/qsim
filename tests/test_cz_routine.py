@@ -8,14 +8,14 @@ instrument, fitter, and the truth it is supposed to recover.
 import numpy as np
 import pytest
 
-from transmon_sim import (
+from qsim import (
     GATE_ERROR_SPEC,
     MeasurementRequest,
     MockQPU,
     Routine,
     SimInstrument,
 )
-from transmon_sim.analysis import fit_cz_phase, fit_result
+from qsim.analysis import fit_cz_phase, fit_result
 
 SHIFT_S = 8 * 3600.0
 

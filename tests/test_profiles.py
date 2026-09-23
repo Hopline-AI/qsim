@@ -1,7 +1,7 @@
 """profiles/sinica.toml: the Academia Sinica device profile.
 
 A profile is a complete replacement for `constants.toml`, selected with
-`TRANSMON_SIM_CONSTANTS`. The module constants in `simulator.py` and
+`QSIM_CONSTANTS`. The module constants in `simulator.py` and
 `contract.py` are bound at import, so a profile can only be exercised in a
 process that was started with the env var set. Every test here that needs the
 profile therefore runs one subprocess and reads back a JSON probe; the tests in
@@ -27,7 +27,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from transmon_sim import _config, contract, simulator
+from qsim import _config, contract, simulator
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / "profiles" / "sinica.toml"
@@ -114,9 +114,9 @@ from dataclasses import asdict, replace
 
 import numpy as np
 
-from transmon_sim import _config, contract
-from transmon_sim.contract import CostModel, MeasurementRequest, Routine
-from transmon_sim.simulator import DeviceParams, MockQPU
+from qsim import _config, contract
+from qsim.contract import CostModel, MeasurementRequest, Routine
+from qsim.simulator import DeviceParams, MockQPU
 
 n_qubits, seed, scans, readout_t1s = json.loads(sys.argv[1])
 
@@ -177,9 +177,9 @@ json.dump({
 def _probe(constants: Path | None) -> dict:
     """Run the probe in a child process against `constants` (None = the default)."""
     env = dict(os.environ)
-    env.pop("TRANSMON_SIM_CONSTANTS", None)
+    env.pop("QSIM_CONSTANTS", None)
     if constants is not None:
-        env["TRANSMON_SIM_CONSTANTS"] = str(constants)
+        env["QSIM_CONSTANTS"] = str(constants)
     arg = json.dumps([
         N_QUBITS,
         SEED,
@@ -409,7 +409,7 @@ def test_the_crosstalk_law_is_the_fit_to_their_matrix():
 
 _XT_LOOP = r"""
 import json
-from transmon_sim import MeasurementRequest, MockQPU, Routine, SimInstrument, fit_result
+from qsim import MeasurementRequest, MockQPU, Routine, SimInstrument, fit_result
 
 qpu = MockQPU(5, seed=0)
 top = qpu.topology
@@ -445,7 +445,7 @@ json.dump({
 
 def test_their_compensation_is_reachable_through_the_routine():
     """Measure every right-source spectator element at their fine setting, apply, and check the residual."""
-    env = dict(os.environ, TRANSMON_SIM_CONSTANTS=str(PROFILE))
+    env = dict(os.environ, QSIM_CONSTANTS=str(PROFILE))
     done = subprocess.run([sys.executable, "-c", _XT_LOOP], cwd=ROOT, env=env,
                           capture_output=True, text=True, check=False)
     assert done.returncode == 0, done.stderr
